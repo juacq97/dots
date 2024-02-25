@@ -1,0 +1,4 @@
+nnoremap "ii" "\"
+set overlap
+nnoremap "K" "^"
+

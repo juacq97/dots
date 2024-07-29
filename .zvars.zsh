@@ -9,19 +9,18 @@ export PATH
 
 export LIGHT_THEME="one-light"
 export DARK_THEME="dracula"
+export COWPATH=/usr/share/cowsay/cows
 
 export NVIM_LISTEN_ADDRESS=/tmp/nvimsocket #necesario para nvim --remote
 export LANG=es_MX.UTF-8
 export EDITOR="nvim"
 #export VISUAL="nvim"
-export TERMINAL="alacritty"
+#export TERMINAL="alacritty"
 export PAGER=less
 export OPENER="mimeopen"
 [ -r "$HOME/.local/bin/lesspipe.sh" ] && export LESSOPEN="| $HOME/.local/bin/lesspipe.sh %s"
 export LESS='-Ri ' #Esto es para poder ver el contenido de archivos comprimidos
 export WINIT_X11_SCALE_FACTOR=1 #No estoy sguro, pero ayuda a alacritty en multiples monitores
-. ~/.config/lf/LF_ICONS #íconos para lf
-. ~/.local/bin/nwrap
 # FZF variables
 export FZF_DEFAULT_COMMAND="find . "
 #

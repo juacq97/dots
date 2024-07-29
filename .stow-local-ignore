@@ -1,0 +1,12 @@
+arch.pkgs
+Asciidoctor
+.git
+.gitignore
+LICENCE
+miscTermux.pkgs
+plasmaAur.pkgs
+plasma.pkgs
+README.org
+silverblue.pkgs
+.stow-local-ignore
+fortune

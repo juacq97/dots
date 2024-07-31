@@ -127,8 +127,8 @@ set undodir=~/.config/nvim/undodir " La caché a usar
 set mouse=a			" Soporte para mouse
 autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
 
-au User LumenLight colorscheme onehalflight
-au User LumenDark colorscheme gruvbox
+"au User LumenLight colorscheme onehalflight
+"au User LumenDark colorscheme gruvbox
 """""""""""""
 " Maping
 """""""""""""

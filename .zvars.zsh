@@ -44,3 +44,7 @@ export MOZ_ENABLE_WAYLAND=1
 
 export XKB_DEFAULT_LAYOUT=latam
 #export GTK_USE_PORTAL=1
+
+export GOPATH=$(go env GOPATH)
+export GOBIN=$GOPATH/bin
+export PATH=$PATH:$GOBIN

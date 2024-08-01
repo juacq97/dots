@@ -117,7 +117,7 @@ set encoding=utf-8	        " Codificación utf8
 set shiftwidth=4	        " TAB mide 4 espacios (no estoy seguro)
 set softtabstop=4	        " TAB mide 4 espacios (no estoy seguro)
 set smartindent		        " Sangría automática en lineas nuevas cerradas por llaves
-set smarttab		        " No se, pero sirve para borrar tabs
+"set smarttab		        " No se, pero sirve para borrar tabs
 set virtualedit=block	        " Cursor libre cuando se usa visualblock
 set backspace=eol,start,indent  " Backspace funciona bien con tabs
 set whichwrap+=<,>,h,l	        " h y j respeta tabs
@@ -163,7 +163,7 @@ nnoremap Q <Nop>
 "
 "
 let g:asciidoctor_syntax_conceal = 1
-let g:asciidoctor_folding = 1
+let g:asciidoctor_folding = 0
 command A2p Asciidoctor2PDF
 autocmd FileType asciidoctor map <buffer> <leader>cp :Asciidoctor2PDF<CR>
 

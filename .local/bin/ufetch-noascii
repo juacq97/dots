@@ -64,7 +64,7 @@ c0="${reset}${cyan}"                # first color
 ## OUTPUT
 
 cat <<EOF
-${lc}       﫭 ${ic}~ ${os}${reset}
+${lc}        ${ic} ~ ${os}${reset}
 ${lc}        ${ic} ~ zsh${reset}
 ${lc}        ${ic} ~ ${uptime}${reset}
 ${lc}        ${ic} ~ ${ui}${reset}

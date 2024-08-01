@@ -1,4 +1,4 @@
-:pdf-theme: ~/.config/Asciidoctor/planeaciones.yml
+:pdf-theme: ~/.repos/dots/Asciidoctor/planeaciones.yml
 // This is the included file with all the text and the one I edit. 
 // I call the `org` and `tiempos` tags from here just to save time.
 include::{sesion}[tags=org;tiempos]

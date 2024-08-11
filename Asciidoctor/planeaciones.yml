@@ -83,30 +83,34 @@ thematic_break_border_width: 0.5
 thematic_break_padding: 4
 
 header:
-    font-size: 9
-    height: 2.0in
+    font-size: 8
+    height: 1.7in
     recto:
       columns: "<10% =80% >10%"
       left:
-          content: image:/home/juan/Descargas/logo.png[pdfwidth=0.7in]
+          content: image:/home/juan/Documentos/plans/sep.png[pdfwidth=1in]
       center:
         content: |
-            *LA PAZ BAJA CALIFORNIA SUR, MÉXICO* +
-            *INSTITUTO MÉXICO BILINGÜE* +
-            *PLANEACIÓN DIDÁCTICA* +
+            *SECRETARÍA DE EDUCACIÓN PÚBLICA* +
+            *CABO SAN LUCAS, BAJA CALIFORNIA SUR, MÉXICO* +
+            *SABERES Y PENSAMIENTO CIENTÍFICO* +
+            *MATEMÁTICAS* +
+            *PROF. JUAN ADRIÁN CASTRO QUINTANA* +
       right:
-          content: image:/home/juan/Descargas/logo.png[pdfwidth=0.7in]
+          content: image:/home/juan/Documentos/plans/sep.png[pdfwidth=1in]
     verso:
       columns: "<10% =80% >10%"
       left:
-          content: image:/home/juan/Descargas/logo.png[pdfwidth=0.7in]
+          content: image:/home/juan/Documentos/plans/sep.png[pdfwidth=1in]
       center:
         content: |
-            *LA PAZ BAJA CALIFORNIA SUR, MÉXICO* +
-            *INSTITUTO MÉXICO BILINGÜE* +
-            *PLANEACIÓN DIDÁCTICA* +
+            *SECRETARÍA DE EDUCACIÓN PÚBLICA* +
+            *CABO SAN LUCAS, BAJA CALIFORNIA SUR, MÉXICO* +
+            *SABERES Y PENSAMIENTO CIENTÍFICO* +
+            *MATEMÁTICAS* +
+            *PROF. JUAN ADRIÁN CASTRO QUINTANA* +
       right:
-          content: image:/home/juan/Descargas/logo.png[pdfwidth=0.7in]
+          content: image:/home/juan/Documentos/plans/sep.png[pdfwidth=1in]
 
 footer_recto_right_content: '{page-number}'
 footer_verso_left_content: '{page-number}'

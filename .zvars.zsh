@@ -9,7 +9,7 @@ export PATH
 
 export LIGHT_THEME="one-light"
 export DARK_THEME="dracula"
-export COWPATH=/usr/share/cowsay/cows
+#export COWPATH=/usr/share/cowsay/cows
 
 export NVIM_LISTEN_ADDRESS=/tmp/nvimsocket #necesario para nvim --remote
 export LANG=es_MX.UTF-8
@@ -45,6 +45,6 @@ export MOZ_ENABLE_WAYLAND=1
 export XKB_DEFAULT_LAYOUT=latam
 #export GTK_USE_PORTAL=1
 
-export GOPATH=$(go env GOPATH)
+#export GOPATH=$(go env GOPATH)
 export GOBIN=$GOPATH/bin
 export PATH=$PATH:$GOBIN

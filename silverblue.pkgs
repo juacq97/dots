@@ -1,5 +1,5 @@
 playerctl
-youtube-dl
+yt-dlp
 
 poppler
 unzip
@@ -13,7 +13,6 @@ brightnessctl
 pamixer
 libnotify
 zsh
-zsh-theme-powerlevel10k
 zsh-autosuggestions
 zsh-completions
 zsh-syntax-highlighting

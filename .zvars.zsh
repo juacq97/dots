@@ -4,9 +4,8 @@
 
 #export GEM_HOME="$(ruby -e 'puts Gem.user_dir')"
 
-PATH="$HOME/.local/bin:/mnt/DATA/juan/color-scripts/color-scripts:$HOME/.local:$HOME/.local/share/gem/ruby/3.0.0/bin:$HOME/.config/rofi:$HOME/.emacs.d/bin:/usr/lib64:/usr/local/bin:/usr/share/kservices5/kwin:$GEM_HOME/bin:$PATH"
+PATH="$HOME/.local/bin:/mnt/DATA/juan/color-scripts/color-scripts:$HOME/.local:$HOME/.local/share/gem/ruby/3.2.0/bin:$HOME/.config/rofi:$HOME/.emacs.d/bin:/usr/lib64:/usr/local/bin:/usr/share/kservices5/kwin:$GEM_HOME/bin:$PATH"
 export PATH
-
 export LIGHT_THEME="one-light"
 export DARK_THEME="dracula"
 #export COWPATH=/usr/share/cowsay/cows

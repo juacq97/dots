@@ -8,25 +8,37 @@ if [ -z $DISPLAY ] && [ "$(tty)" = "/dev/tty1" ]; then
      exec sway
  fi
 
+ 
+
 # Powerlevel10k
  if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
    source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
  fi
 
 # Fetch when terminal appears
+ufetch-noascii
 
-if  [[ "$(uname -o)" == "Android" ]]; then
-    export LANG=C
-    ~/.local/bin/ufetch-termux
-    source ~/.repos/powerlevel10k/powerlevel10k.zsh-theme
-    source ~/.repos/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-    source ~/.repos/zsh-autosuggestions/zsh-autosuggestions.zsh
+#if  [[ "$(uname -o)" == "Android" ]]; then
+#    export LANG=C
+#    ~/.local/bin/ufetch-termux
+#    source ~/.repos/powerlevel10k/powerlevel10k.zsh-theme
+#    source ~/.repos/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+#    source ~/.repos/zsh-autosuggestions/zsh-autosuggestions.zsh
+#else
+#    ufetch-noascii
+#    source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+#    source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+#fi
+
+
+if  [[ -f /etc/fedora-release ]]; then
+    source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+    source /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+
 else
-    ufetch-noascii
     source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
     source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 fi
-
 
 
 # Basic auto/tab complete:

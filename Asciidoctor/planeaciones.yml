@@ -43,9 +43,32 @@ title_page_title_font_size: 18
 title_page_subtitle_font_size: 14
 title_page_authors_margin_top: 12
 
+
+list:
+  indent: 10
+
+admonition:
+  background-color: "#74D393"
+  border-radius: 4
+  border-width: 0
+  padding: [12, 12, 0, 12]
+  icon:
+    tip:
+      name: pencil-alt
+
+
+
+verse:
+  background-color: '#9F9F9F'
+  border-color: '#9F9F9F'
+  border-radius: 4
+  border-width: 0
+  padding: [12, 12, 0, 12]
+
+
 example:
-  background-color: '#B3D9F5'
-  border-color: '#e33333'
+  background-color: '#9F9F9F'
+  border-color: '#9F9F9F'
   border-radius: 4
   border-width: 0
   padding: [12, 12, 0, 12]
@@ -55,8 +78,8 @@ example:
     text-align: left
 
 sidebar:
-  background-color: '#F5CFB3'
-  border-color: '#e33333'
+  background-color: '#C19095'
+  border-color: '#C19095'
   border-radius: 4
   border-width: 0
   padding: [12, 12, 0, 12]
@@ -88,7 +111,7 @@ header:
     recto:
       columns: "<10% =80% >10%"
       left:
-          content: image:/home/juan/Documentos/plans/sep.png[pdfwidth=1in]
+          content: image:/home/juan/.repos/dots/Asciidoctor/sep.png[pdfwidth=1in]
       center:
         content: |
             *SECRETARÍA DE EDUCACIÓN PÚBLICA* +
@@ -97,11 +120,11 @@ header:
             *MATEMÁTICAS* +
             *PROF. JUAN ADRIÁN CASTRO QUINTANA* +
       right:
-          content: image:/home/juan/Documentos/plans/sep.png[pdfwidth=1in]
+          content: image:/home/juan/.repos/dots/Asciidoctor/sep.png[pdfwidth=1in]
     verso:
       columns: "<10% =80% >10%"
       left:
-          content: image:/home/juan/Documentos/plans/sep.png[pdfwidth=1in]
+          content: image:/home/juan/.repos/dots/Asciidoctor/sep.png[pdfwidth=1in]
       center:
         content: |
             *SECRETARÍA DE EDUCACIÓN PÚBLICA* +
@@ -110,7 +133,7 @@ header:
             *MATEMÁTICAS* +
             *PROF. JUAN ADRIÁN CASTRO QUINTANA* +
       right:
-          content: image:/home/juan/Documentos/plans/sep.png[pdfwidth=1in]
+          content: image:/home/juan/.repos/dots/Asciidoctor/sep.png[pdfwidth=1in]
 
 footer_recto_right_content: '{page-number}'
 footer_verso_left_content: '{page-number}'

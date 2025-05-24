@@ -7,9 +7,8 @@
     "spacing": 4, // Gaps between modules (4px)
     // Choose the order of the modules
     "modules-left": [
-	"wlr/workspaces",
-        "backlight",
-        "pulseaudio",
+	"niri/workspaces",
+	"niri/window",
     ], 
     "modules-center": [
 	"clock",
@@ -17,25 +16,29 @@
     "modules-right": [
         "idle_inhibitor",
         "network",
+        "backlight",
+        "pulseaudio",
         "power-profiles-daemon",
         "battery"
         //"tray",
         //"custom/power"
     ],
 
-    "wlr/workspaces": {
-	"format": "dsjkfjla {name}",
-	"active-only": true,
+    "niri/workspaces": {
+	"format": "󰧨 {value}",
+	"current-only": true
+    },
 
-
-
+    "niri/window": {
+	"format": "{title}",
+	"icon": false
     },
 
     "idle_inhibitor": {
         "format": "{icon}",
         "format-icons": {
-            "activated": "",
-            "deactivated": ""
+            "activated": "󰅶",
+            "deactivated": "󰾪"
         }
     },
     "tray": {
@@ -71,8 +74,11 @@
 
     "backlight": {
         // "device": "acpi_video1",
-        "format": "{percent}% ",
-        "format-icons": ["", "", "", "", "", "", "", "", ""]
+	"tooltip": true,
+	"tooltip-format": "{percent}%",
+        "format": "{icon}",
+	"format-alt": "{percent}% {icon}",
+        "format-icons": ["󰃚", "󰃛", ",󰃜", "󰃝", "󰃟", "󰃞", "󰃠"]
     },
     "battery": {
         "states": {
@@ -80,14 +86,16 @@
             "warning": 30,
             "critical": 15
         },
-        "format": "{capacity}% {icon}",
-        "format-full": "{capacity}% {icon}",
-        "format-charging": "{capacity}% ",
-        "format-plugged": "{capacity}% ",
-        "format-alt": "{capacity} {icon}",
+	"tooltip": true,
+	"tooltip-format": "{capacity}%",
+        "format": "{icon}",
+        "format-full": "󰂄 ",
+        "format-charging": "󱐋{icon}",
+        "format-plugged": "{icon}",
+        "format-alt": "{time} {icon}",
         // "format-good": "", // An empty format will hide the module
         // "format-full": "",
-        "format-icons": ["", "", "", "", ""]
+        "format-icons": ["󰁺","󰁻","󰁼","󰁽","󰁾","󰁿","󰂀","󰂁","󰂂","󰁹"]
     },
     "power-profiles-daemon": {
       "format": "{icon}",
@@ -103,19 +111,20 @@
     "network": {
         // "interface": "wlp2*", // (Optional) To force the use of this interface
         //"format-wifi": "{essid} ({signalStrength}%) {icon}",
-        "format-wifi": "{signalStrength}%  ",
-        "format-ethernet": "{ipaddr}/{cidr} ",
-        "tooltip-format": "{ifname} via {gwaddr} ",
-        "format-linked": "{ifname} (No IP) ",
-        "format-disconnected": "Disconnected ⚠",
-        "format-alt": "{essid} ({signalStrength}%)  "
+        "format-wifi": "{icon}",
+        "tooltip-format": "{signalStrength}% {icon}",
+        "format-disconnected": "󰤭",
+        "format-alt": "{essid} ({signalStrength}%)  ",
+	"format-icons": ["󰤯","󰤟","󰤢","󰤥","󰤨"]
     },
     "pulseaudio": {
         // "scroll-step": 1, // %, can be a float
-        "format": "{volume}% {icon}",
+	"tooltip": true,
+        "format": "{icon}",
+        "tooltip-format": "{volume}%",
         "format-bluetooth": "{volume}% {icon} {format_source}",
         "format-bluetooth-muted": " {icon} {format_source}",
-        "format-muted": " {format_source}",
+        "format-muted": "Mute 󰸈 ",
         "format-source": "{volume}% ",
         "format-source-muted": "",
         "format-icons": {
@@ -125,7 +134,7 @@
             "phone": "",
             "portable": "",
             "car": "",
-            "default": ["", "", ""]
+            "default": ["󰕿", "󰖀", "󰕾"]
         },
         "on-click": "pavucontrol"
     },

@@ -1,17 +1,23 @@
 * {
     /* `otf-font-awesome` is required to be installed for icons */
-    font-family: FontAwesome, Roboto, Helvetica, Arial, sans-serif;
-    font-size: 16px;
+    font-family: Adwaita Sans, Symbols Nerd Font Mono, sans-serif;
+    font-weight: 500;
+    font-size: 14px;
 }
 
 window#waybar {
-    background-color: rgba(43, 48, 59, 0.5);
-    border-bottom: 3px solid rgba(100, 114, 125, 0.5);
-    color: #ffffff;
+    background-color: rgba(45, 53, 59, 0.0);
+    border-bottom: 0px solid rgba(100, 114, 125, 0.5);
+    color: #2D353B;
+    text-shadow: 1px 1px 2px white;
     transition-property: background-color;
     transition-duration: .5s;
 }
 
+#workspaces button{
+    color: #2D353B;
+
+}
 window#waybar.hidden {
     opacity: 0.2;
 }
@@ -19,21 +25,3 @@ window#waybar.hidden {
 label.module {
     padding: 0 5px;
 }
-/*
-window#waybar.empty {
-    background-color: transparent;
-}
-window#waybar.solo {
-    background-color: #FFFFFF;
-}
-*/
-
-window#waybar.termite {
-    background-color: #3F3F3F;
-}
-
-window#waybar.chromium {
-    background-color: #000000;
-    border: none;
-}
-

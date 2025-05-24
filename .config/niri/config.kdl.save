@@ -42,7 +42,6 @@ input {
 }
 
 layout {
-    background-color "transparent"
     gaps 10
     center-focused-column "never"
     always-center-single-column
@@ -59,10 +58,10 @@ layout {
         // off
 
         // How many logical pixels the ring extends out from the windows.
-        width 3
-	//active-color "#7fc8ff"
+        width 4
+        active-color "#7fc8ff"
         inactive-color "#505050"
-        active-gradient from="#a7c080" to="#e67e80" angle=70 relative-to="workspace-view"
+        // active-gradient from="#80c8ff" to="#bbddff" angle=45
         // inactive-gradient from="#505050" to="#808080" angle=45 relative-to="workspace-view"
     }
     border {
@@ -83,8 +82,7 @@ tab-indicator {
         position "top"
         gaps-between-tabs 2
         corner-radius 8
-        //active-color "red"
-        active-gradient from="#a7c080" to="#e67e80" angle=70 relative-to="workspace-view"
+        active-color "red"
         inactive-color "gray"
         urgent-color "blue"
         // active-gradient from="#80c8ff" to="#bbddff" angle=45
@@ -133,11 +131,11 @@ cursor {
 
 overview {
     zoom 0.6
-    backdrop-color "#3d484d"
+    backdrop-color "#262626"
 
 
     workspace-shadow {
-        off
+        // off
         softness 40
         spread 10
         offset x=0 y=10
@@ -197,11 +195,10 @@ animations {
     }
 }
 
-// window-rule {
-//     match app-id="kitty"
-//     prefer-no-csd
-// }
-    
+window-rule {
+    match app-id=r#"^org\.wezfurlong\.wezterm$"#
+    default-column-width {}
+}
 window-rule {
     // This app-id regular expression will work for both:
     // - host Firefox (app-id is "firefox")
@@ -225,7 +222,7 @@ window-rule {
 binds {
     // `niri msg action do-something`.
     Mod+Slash { show-hotkey-overlay; }
-    Mod+Return hotkey-overlay-title="Open a Terminal: alacritty" { spawn "kitty"; }
+    Mod+Return hotkey-overlay-title="Open a Terminal: alacritty" { spawn "alacritty"; }
     Mod+Space hotkey-overlay-title="Run an Application: fuzzel" { spawn "fuzzel"; }
     Super+Alt+L hotkey-overlay-title="Lock the Screen: swaylock" { spawn "swaylock"; }
     // Mod+T { spawn "bash" "-c" "notify-send hello && exec alacritty"; }

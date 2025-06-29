@@ -30,7 +30,7 @@ Plug 'Junegunn/fzf.vim'
 Plug 'SirVer/ultisnips'
 Plug 'dhruvasagar/vim-table-mode'
 Plug 'ntk148v/vim-horizon'
-Plug 'dracula/vim', { 'as': 'dracula' }
+Plug 'Mofiqul/dracula.nvim'
 Plug 'rakr/vim-one'
 Plug 'habamax/vim-asciidoctor'
 Plug 'morhetz/gruvbox'
@@ -88,17 +88,17 @@ set hidden
 set laststatus=2	       " remove modeline
 set textwidth=0		       
 set formatoptions+=t
-set notermguicolors
+"set notermguicolors
 syntax enable			
 set conceallevel=0
 
 """ Themes """""
 let g:grubvox_italic = 1
 
-colorscheme 
-highlight Conceal guifg=White guibg=color0
+colorscheme
+"highlight Conceal guifg=White guibg=color0
 let g:one_allow_italics = 1 
-highlight Comment cterm=italic gui=italic
+"highlight Comment cterm=italic gui=italic
 "
 """"" Statusline y ruler """""""
 "set rulerformat=%14(%l,%c%)\ %P

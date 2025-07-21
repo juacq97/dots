@@ -47,32 +47,15 @@ Plug 'nvim-telescope/telescope-media-files.nvim'
 Plug 'godlygeek/tabular'
 Plug 'preservim/vim-markdown'
 Plug 'vimpostor/vim-lumen'
+Plug 'OXY2DEV/markview.nvim'
+Plug 'nvim-treesitter/nvim-treesitter'
+Plug 'brianhuster/live-preview.nvim'
 call plug#end()
 
  set nocompatible
     if has("autocmd")
       filetype plugin indent on
     endif
-
-""""""""""""""
-"Neovide stuff
-""""""""""""""
-if exists("g:neovide")
-    let g:neovide_refresh_rate=60
-    let g:neovide_transparency=1
-    let g:neovide_hide_mouse_when_typing = v:true
-    let g:neovide_scroll_animation_lenght = 0.3
-    let g:neovide_cursor_animation_length=0.05
-    let g:neovide_cursor_trail_size=0.8
-    let g:neovide_cursor_antialiasing = v:true
-    let g:neovide_cursor_vfx_mode = "wireframe"
-    let g:neovide_padding_top = 30
-    let g:neovide_padding_left = 30
-    let g:neovide_padding_right = 30
-    let g:neovide_padding_bottom = 30
-    set guifont="Fira\ Code\ Medium\ Nerd\ Font\ Complete:h10"
-    let g:neovide_scale_factor=0.80
-endif
 
 """""""""""""""""""
 " UI
@@ -88,14 +71,14 @@ set hidden
 set laststatus=2	       " remove modeline
 set textwidth=0		       
 set formatoptions+=t
-"set notermguicolors
+set notermguicolors
 syntax enable			
 set conceallevel=0
 
 """ Themes """""
 let g:grubvox_italic = 1
 
-colorscheme
+"colorscheme
 "highlight Conceal guifg=White guibg=color0
 let g:one_allow_italics = 1 
 "highlight Comment cterm=italic gui=italic

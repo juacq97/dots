@@ -1,0 +1,41 @@
+theme = "catppuccin_latte"
+
+[editor]
+line-number = "relative"
+cursorline = true
+cursorcolumn = true
+popup-border = "all"
+clipboard-provider = "wayland"
+color-modes = true
+
+[editor.statusline]
+mode.normal = "󰰓"
+mode.insert = "󰰄"
+mode.select = "󰰢"
+
+[editor.cursor-shape]
+normal = "block"
+insert = "bar"
+select = "underline"
+
+[editor.whitespace]
+render = "all"
+[editor.whitespace.characters]
+space = "·"
+nbsp = "⍽"
+nnbsp = "␣"
+tab = "→"
+newline = "⏎"
+tabpad = "·" # Tabs will look like "→···" (depending on tab width)
+
+[editor.indent-guides]
+render = true
+character = "⸽"
+skip-levels = 0
+
+
+[keys.normal]
+y = "yank_to_clipboard"
+p = "paste_clipboard_after"
+P = "paste_clipboard_before"
+

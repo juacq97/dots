@@ -57,12 +57,22 @@ alias grep="grep --color=always"
 alias d="cd ~/.repos/dots"
 alias h="cd /mnt/Data"
 alias r="cd ~/.repos"
+alias nvim="helix"
+alias hx="helix"
 
 # variables
 export NVIM_LISTEN_ADDRESS=/tmp/nvimsocket #necesario para nvim --remote
 export LANG=es_MX.UTF-8
-export EDITOR="nvim"
+export EDITOR="helix"
 export PAGER=less
 [ -r "$HOME/.local/bin/lesspipe.sh" ] && export LESSOPEN="| $HOME/.local/bin/lesspipe.sh %s"
 export LESS='-Ri '
 export FZF_DEFAULT_COMMAND="find . "
+
+function y() {
+	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
+	yazi "$@" --cwd-file="$tmp"
+	IFS= read -r -d '' cwd < "$tmp"
+	[ -n "$cwd" ] && [ "$cwd" != "$PWD" ] && builtin cd -- "$cwd"
+	rm -f -- "$tmp"
+}

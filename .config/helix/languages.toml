@@ -1,0 +1,6 @@
+[[language]]
+name = "bash"
+language-id = "shellscript"
+shebangs = ["sh","bash"]
+auto-format = true
+formatter = { command = "shfmt", args = ["-i", "4", "-ci", "-bn", "-sr", "-fn", "-s"] }

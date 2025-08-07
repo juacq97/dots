@@ -8,6 +8,9 @@ popup-border = "all"
 clipboard-provider = "wayland"
 color-modes = true
 
+[editor.soft-wrap]
+enable = true
+
 [editor.statusline]
 mode.normal = "󰰓"
 mode.insert = "󰰄"
@@ -18,15 +21,29 @@ normal = "block"
 insert = "bar"
 select = "underline"
 
-[editor.whitespace]
-render = "all"
+[editor.whitespace.render]
+space = "all"
+tab = "all"
+nbsp = "none"
+nnbsp = "none"
+newline = "none"
+
 [editor.whitespace.characters]
 space = "·"
 nbsp = "⍽"
 nnbsp = "␣"
 tab = "→"
 newline = "⏎"
-tabpad = "·" # Tabs will look like "→···" (depending on tab width)
+tabpad = "·"
+
+# Tabs will look like "→···" (depending on tab width)
+# [editor.whitespace.characters]
+# space = "·"
+# nbsp = "⍽"
+# nnbsp = "␣"
+# tab = "→"
+# newline = "⏎"
+# tabpad = "·" # Tabs will look like "→···" (depending on tab width)
 
 [editor.indent-guides]
 render = true

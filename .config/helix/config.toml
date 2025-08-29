@@ -7,19 +7,20 @@ cursorcolumn = true
 popup-border = "all"
 clipboard-provider = "wayland"
 color-modes = true
+rulers = [80]
 
 [editor.soft-wrap]
 enable = true
 
 [editor.statusline]
-mode.normal = "󰰓"
-mode.insert = "󰰄"
-mode.select = "󰰢"
+mode.normal = "NORMAL"
+mode.insert = "INSERT"
+mode.select = "SELECTION"
 
 [editor.cursor-shape]
 normal = "block"
-insert = "bar"
-select = "underline"
+insert = "block"
+select = "block"
 
 [editor.whitespace.render]
 space = "all"
@@ -36,23 +37,19 @@ tab = "→"
 newline = "⏎"
 tabpad = "·"
 
-# Tabs will look like "→···" (depending on tab width)
-# [editor.whitespace.characters]
-# space = "·"
-# nbsp = "⍽"
-# nnbsp = "␣"
-# tab = "→"
-# newline = "⏎"
-# tabpad = "·" # Tabs will look like "→···" (depending on tab width)
-
 [editor.indent-guides]
 render = true
 character = "⸽"
-skip-levels = 0
-
+skip-levels = 1
 
 [keys.normal]
 y = "yank_to_clipboard"
+d = ["yank_to_clipboard", "delete_selection"]
 p = "paste_clipboard_after"
 P = "paste_clipboard_before"
+D = ["extend_to_line_end", "yank_to_clipboard", "delete_selection"]
 
+
+[keys.select]
+y = "yank_to_clipboard"
+d = ["yank_to_clipboard", "delete_selection"]

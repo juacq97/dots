@@ -58,6 +58,7 @@ alias d="cd ~/.repos/dots"
 alias h="cd /mnt/Data"
 alias r="cd ~/.repos"
 alias nvim="helix"
+alias py="python"
 alias hx="helix"
 
 # variables
@@ -76,3 +77,6 @@ function y() {
 	[ -n "$cwd" ] && [ "$cwd" != "$PWD" ] && builtin cd -- "$cwd"
 	rm -f -- "$tmp"
 }
+
+export PATH=$HOME/perl5/bin:$PATH
+export PERL5LIB=$HOME/perl5/lib/perl5:$PERL5LIB

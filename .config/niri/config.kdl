@@ -111,9 +111,9 @@ tab-indicator {
 
 spawn-at-startup "waybar"
 spawn-at-startup "mako"
-spawn-at-startup "/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1"
-spawn-at-startup "swww-daemon"
-spawn-at-startup "walker --gapplication-service"
+// spawn-at-startup "/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1"
+// spawn-at-startup "swww-daemon"
+// spawn-at-startup "walker --gapplication-service"
 //spawn-at-startup "xfce4-session"
 
 
@@ -125,7 +125,7 @@ environment {
 
 cursor {
     xcursor-theme "breeze_cursors"
-    xcursor-size 72
+    xcursor-size 24
 
     hide-when-typing
     hide-after-inactive-ms 1000
@@ -225,7 +225,7 @@ window-rule {
 binds {
     // `niri msg action do-something`.
     Mod+Slash { show-hotkey-overlay; }
-    Mod+Return hotkey-overlay-title="Open a Terminal: alacritty" { spawn "kitty"; }
+    Mod+Return hotkey-overlay-title="Open a Terminal: kitty" { spawn "kitty"; }
     Mod+Space hotkey-overlay-title="Run an Application: fuzzel" { spawn "fuzzel"; }
     Super+Alt+L hotkey-overlay-title="Lock the Screen: swaylock" { spawn "swaylock"; }
     // Mod+T { spawn "bash" "-c" "notify-send hello && exec alacritty"; }

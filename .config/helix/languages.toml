@@ -4,3 +4,13 @@ language-id = "shellscript"
 shebangs = ["sh","bash"]
 auto-format = true
 formatter = { command = "shfmt", args = ["-i", "4", "-ci", "-bn", "-sr", "-fn", "-s"] }
+
+[[language]]
+name = "markdown"
+auto-format = true
+formatter = { command = 'deno', args = ["fmt", "-", "--ext", "md", "--prose-wrap", "never" ] }
+
+[[language]]
+name = "python"
+formatter = { command = "ruff", args = ["format", "--line-length", "88", "-"] }
+auto-format = true

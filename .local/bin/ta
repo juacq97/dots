@@ -1,0 +1,757 @@
+#!/bin/bash
+asisFile="./db/asistencia.csv"
+actFile="./db/trabajos.csv"
+actList="./db/listaActs.csv"
+listFile="./db/lista.csv"
+opciones=("Asistencia\nSaltada\nRetardo\nFalta\nJustificada") # es util en varios lugares
+mlrCmd="mlr --csv"
+viewCsv="csvlens --colorful"
+reporteDir="./reportes"
+csFile="./db/cs.csv"
+pFile="./db/p.csv"
+pesoAC=0.65
+pesoCS=0.20
+pesoP=0.15
+
+#  #####################
+#  Funciones especiales
+#  #####################
+getGrupos()
+{
+    $mlrCmd --ho --from $listFile uniq -g Grupo
+}
+
+chooseGrupos()
+{
+    getGrupos | gum filter --header "¿Qué grupo?"
+
+}
+
+getAlumno()
+{
+    $mlrCmd --ho --from $listFile filter "\$Grupo == \"$grupo\"" then filter '$Baja == "0"' then uniq -g Nombre
+}
+
+chooseAlumno()
+{
+    if [[ -z $1 ]]; then
+        mensaje="$1"
+    else
+        mensaje="Elige un alumno"
+        getAlumno | gum filter --header "$mensaje"
+    fi
+}
+
+getFechas()
+{
+    local grupo="$1"
+    $mlrCmd --ho --from $asisFile filter "\$Grupo == \"$grupo\"" then uniq -g Fecha
+}
+
+chooseFechas()
+{
+    getFechas "$grupo" | gum filter --header "¿Qué fecha?"
+}
+
+# #################################
+# Funciones para reportes de grupos
+# #################################
+
+verAlumno()
+{
+    if [[ -z $1 ]]; then
+        while true; do
+            local grupo=$(chooseGrupos)
+            [[ -z $grupo ]] && break
+
+            while true; do
+                local alumno=$(chooseAlumno "$grupo")
+                [[ -z $alumno ]] && break
+
+                $mlrCmd --from $asisFile filter "\$Grupo == \"$grupo\"" then filter "\$Nombre == \"$alumno\"" then cut -f Fecha,Asistencia | $viewCsv
+            done
+        done
+        return
+    else
+        grupo="$1"
+        alumno="$2"
+        $mlrCmd --from $asisFile filter "\$Grupo == \"$grupo\"" then filter "\$Nombre == \"$alumno\"" then cut -f Fecha,Asistencia
+    fi
+}
+
+exportarGrupo()
+{
+    while true; do
+        local grupo=$(chooseGrupos)
+        [[ -z $grupo ]] && break
+
+        $mlrCmd --from $asisFile filter "\$Grupo == \"$grupo\"" then reshape -s Fecha,Asistencia then cut -x -f Grupo
+        break
+    done
+}
+
+exportarGrupoArchivo()
+{
+    exportarGrupo "$grupo" > $reporteDir/asistencia_$grupo.csv
+    echo "Asistencia exportada como asistencia_$grupo.csv"
+}
+
+exportarTodos()
+{
+    for g in $(getGrupos); do
+        exportarGrupo "$g" > $reporteDir/asistencia_$g.csv
+    done
+}
+
+verGrupo()
+{
+    exportarGrupo "$grupo" | $viewCsv
+    gum confirm "¿Exportar a csv?" && {
+        exportarGrupo "$grupo"
+    }
+}
+
+contarAsistenciasGrupo()
+{
+    while true; do
+        local grupo=$(chooseGrupos)
+        [[ -z $grupo ]] && break
+
+        $mlrCmd --from $asisFile filter "\$Grupo == \"$grupo\"" \
+            then count -g Nombre,Asistencia \
+            then reshape -s Asistencia,count -o Nombre \
+            then unsparsify --fill-with 0 | $viewCsv
+        break
+    done
+}
+
+asistenciasFecha()
+{
+    while true; do
+        local grupo=$(chooseGrupos)
+        [[ -z $grupo ]] && break
+
+        while true; do
+            local fecha=$(chooseFechas)
+            [[ -z $fecha ]] && break
+
+            $mlrCmd --from $asisFile filter "\$Grupo == \"$grupo\"" then filter "\$Fecha == \"$fecha\"" | $viewCsv
+            break
+        done
+    done
+}
+
+conteoAlumno()
+{
+    local grupo="$1"
+    local alumno="$2"
+    $mlrCmd --from $asisFile filter "\$Grupo == \"$grupo\"" \
+        then filter "\$Nombre == \"$alumno\"" \
+        then count -g Asistencia -o Cantidad \
+        then cut -x -f Nombre
+}
+
+reporteQuincenal()
+{
+    grupo=$(chooseGrupos) # Usas gum o fzf
+    faltaFile="tmpFalta.csv"
+    faltaList="tmpList.csv"
+    reporteFile="tmpReporte.md"
+    tmpFile="tmp.csv"
+    fechaFile=$(date +"%d de %B de %Y, a las %R")
+
+    # hoy=$(date +%Y-%m-%d)
+    # inicio=$(date -d "$hoy -14 days" +%Y-%m-%d)
+    hoy="2025-06-20"
+    inicio=$(date -d "$hoy -14 days" +%Y-%m-%d)
+    echo $hoy
+    echo $inicio
+
+    echo -e " # Reporte de faltas de los últimos 15 días para el grupo $grupo" > "$reporteFile"
+
+    # Generar tabla de faltas, guardar en archivo temporal
+    $mlrCmd --from $asisFile filter "\$Grupo == \"$grupo\"" then filter "\$Fecha >= \"$inicio\"" then filter '$Asistencia == "Falta" || $Asistencia == "Saltada"' > "$tmpFile"
+
+    $mlrCmd --from "$tmpFile" count -g Nombre,Asistencia then reshape -s Asistencia,count -o Nombre then unsparsify --fill-with 0 then cut -o -f Nombre,Falta,Saltada > "$faltaFile"
+
+    # convertir faltaFile y exportarlo a reporteFIle en formato MD
+    mlr --icsv --omd --from $faltaFile cat >> "$reporteFile"
+
+    # Generar la lista de los alumno con faltas/asistencias
+    $mlrCmd --ho --from $faltaFile cut -f Nombre > "$faltaList"
+
+    # Pasar por cada alumno y generar lista de asistencias usando la funcion que ya tengo
+
+    echo -e "# Asistencias por alumno de forma individual \n \n"
+
+    while IFS= read -r alumno; do
+        echo -e "### $alumno \n \n" >> "$reporteFile"
+
+        mlr --icsv --omd --from $tmpFile filter "\$Nombre == \"$alumno\"" then cut -f Fecha,Asistencia >> "$reporteFile"
+    done < "$faltaList"
+
+    echo -e "\n *Reporte generado el día $fechaFile.*" >> $reporteFile
+
+    glow -t $reporteFile
+
+    fileDate=$(date +"%Y-%m-%d")
+    file="${fileDate}_reporteFaltasQuincenal_${grupo}"
+    gum confirm "¿Exportar a PDF?" && {
+        pandoc -i $reporteFile --pdf-engine=weasyprint -o "$reporteDir/$file.pdf"
+        echo "Reporte generado exitosamente como $file.pdf."
+    }
+    rm "$faltaFile" "$faltaList" "$tmpFile"
+}
+
+# ############
+# Pasar lista
+# ############
+pasarLista()
+{
+    local fecha=$(date +"%Y-%m-%d_%a")
+
+    # Elegir grupo. No se usa la función original ya que esta se saca de lista y no de asistencias
+    local grupo=$($mlrCmd --ho --from $listFile uniq -g Grupo then sort -f Grupo | gum filter --header "Elegir grupo para pasar lista")
+
+    # Confirmar que no se ha pasado lista hoy, crear archivo de asistencia
+    if [[ ! -f $asisFile ]]; then
+        echo "Fecha,Grupo,No.,Nombre,Asistencia" > "$asisFile"
+    else
+        local checkFecha=$($mlrCmd --ho --from $asisFile filter "\$Fecha == \"$fecha\" && \$Grupo == \"$grupo\"")
+        if [[ -n $checkFecha ]]; then
+            echo "Ya se pasó lista hoy"
+            exit 1
+        fi
+    fi
+
+    # Revisar si existe archivo temporal
+    local tempList="tmp_$grupo.csv"
+    local tempAsis="tmp_Asis_$grupo.csv"
+    if [[ -f $tempList ]]; then
+        gum confirm "Hay una lista pendiente para $grupo, ¿Continuar?" && {
+            echo "Continuando lista..."
+        } || {
+            echo "Eliminando lista pendiente..."
+            rm "$tempList"
+            rm "$tempAsis"
+        }
+    fi
+
+    # crear lista temporal si no existe
+    if [[ ! -f $tempList ]]; then
+        $mlrCmd --from $listFile filter "\$Grupo == \"$grupo\"" then filter '$Baja == "0"' then cut -x -f Baja > "$tempList"
+    fi
+
+    if [[ ! -f $tempAsis ]]; then
+        echo "Fecha,Grupo,No.,Nombre,Asistencia" > "$tempAsis"
+    fi
+
+    # Leer alumnos del grupo
+    while IFS=',' read -r grupoCsv no nombre; do
+        res=$(echo -e "$opciones" | gum filter --placeholder "$nombre ($no)")
+
+        echo "$fecha,$grupoCsv,$no,$nombre,$res" >> "$tempAsis"
+
+        # Eliminar al alumno de la lista temporal
+        $mlrCmd --from $tempList filter -x "\${No.} == \"$no\"" > "$tempList.tmp" && mv "$tempList.tmp" "$tempList"
+    done < <(tail -n +2 "$tempList")
+
+    # Añadir el texto "Baja" a los As dados de baja UwU
+    $mlrCmd --ho --from $listFile filter "\$Grupo == \"$grupo\"" then filter '$Baja == "1"' then put "\$Fecha = \"$fecha\"; \$Asistencia = \"Baja\"" then cut -o -f Fecha,Grupo,"No.",Nombre,Asistencia >> "$tempAsis"
+
+    # 8. Eliminar el archivo temporal si se terminó
+    if [[ $(wc -l < "$tempList") -le 1 ]]; then
+        echo "Terminado el pase de lista"
+
+        tail -n +2 "$tempAsis" >> "$asisFile"
+        rm "$tempList" "$tempAsis"
+    else
+        echo "No se terminó de pasar lista."
+    fi
+}
+
+editarLista()
+{
+    local grupo=$(chooseGrupos)
+    local fecha=$(chooseFechas)
+    local alumno=$(chooseAlumno "$grupo")
+
+    # Obtener valor actual
+    valorActual=$($mlrCmd --ho --from $asisFile filter "\$Grupo == \"$grupo\"" then filter "\$Fecha == \"$fecha\"" then filter "\$Nombre == \"$alumno\"" then cut -f Asistencia)
+    nuevoValor=$(echo -e "$opciones" | gum filter --header "Modificar asistencia de $alumno ($valorActual)")
+    # Modificando con miller
+    mlr -I --csv put "if (\$Nombre == \"$alumno\" && \$Fecha == \"$fecha\" && \$Grupo == \"$grupo\") {\$Asistencia = \"$nuevoValor\"}" $asisFile
+    echo "✅ Asistencia actualizada."
+}
+
+########################
+# Registrar trabajos
+# ######################
+#
+registrarTabajos()
+{
+    local grupo="$1"
+    local actSel="$2"
+    local alumno="$3"
+
+    while true; do
+        calificacion=$(gum input --header "$actSel || $alumno")
+        [[ $calificacion =~ ^[0-9]+([.][0-9]+)?$ ]] && break
+        gum style --foreground 196 "Ingresa un número válido entre 5 y 10."
+    done
+    return
+}
+
+gestionarTrabajos()
+{ # Por actividad, para actividades nuevas principalmente
+    while true; do
+        grupo=$(chooseGrupos)
+        [[ -z $grupo ]] && break
+
+        while true; do
+            sel=$(gum filter --header "¿Qué quieres hacer?" "Crear actividad" "Calificar actividad" "Calificar alumno" "Regresar...")
+
+            case $sel in
+                "Calificar alumno")
+                    while true; do
+                        local alumno=$(chooseAlumno "$grupo")
+                        [[ -z $alumno ]] && break
+
+                        local num=$($mlrCmd --ho --from $listFile filter "\$Nombre == \"$alumno\"" then cut -f No.)
+                        local tmpHechas="tmpHechas.csv"
+                        local tmpGrupo="tmpGrupo.csv"
+
+                        # Actividades del grupo
+                        $mlrCmd --from $actList filter "\$Grupo == \"$grupo\"" > $tmpGrupo
+
+                        # Actividades ya registradas par el alumno
+                        $mlrCmd --ho --from $actFile filter "\$Grupo == \"$grupo\"" then filter "\$Nombre == \"$alumno\"" then cut -f actNum > $tmpHechas
+
+                        while true; do
+
+                            # actSel=$($mlrCmd --from $actList filter "\$Grupo == \"$grupo\"" \
+                            #     then join -j actNum -f $tmpHechas -r \
+                            #     | $mlrCmd --ho put '$linea = $actNum . ". " . $actNombre' \
+                            #         then cut -f linea \
+                            #     | gum filter --header "Actividad a calificar para $alumno")
+                            # echo "$actSel"
+
+                            # Este es el mismmo codigo que en calificar actividad, no filtra las actividdes ya revisadas
+                            actSel=$($mlrCmd --ho --from $actList filter "\$Grupo == \"$grupo\"" then put '$linea = $actNum . ". " . $actNombre' then cut -f linea | gum filter --header "¿Con cuál actividad trabajar?")
+
+                            # actSel=$($mlrCmd --from $actList filter "\$Grupo == \"$grupo\"" \
+                            #     | grep -Fv -f <(cat $tmpHechas) \
+                            #     | $mlrCmd --ho put '$linea = $actNum . ". " . $actNombre' then cut -f linea | gum filter --header "Actividad a calificar para $alumno")
+
+                            [[ -z $actSel ]] && break
+
+                            actNum=$(echo "$actSel" | cut -d. -f1)
+                            actName=$(echo "$actSel" | cut -d. -f2 | sed 's/^ //')
+
+                            registrarTabajos "$grupo" "$actSel" "$alumno"
+
+                            echo "$grupo,$num,$alumno,$actNum,$actName,$calificacion" >> $actFile
+                            echo "✅ Calificación registrada para $alumno: $calificacion"
+                        done
+                    done
+                    ;;
+
+                "Crear actividad")
+                    actName=$(gum input --header "Nombre de la nueva actividad")
+
+                    # calcular numero
+                    lastNum=$($mlrCmd --ho --from $actList filter "\$Grupo == \"$grupo\"" then uniq -g actNum then sort -nr actNum then head -n 1)
+
+                    [[ -z $lastNum ]] && lastNum=0
+                    actNum=$((lastNum + 1))
+
+                    echo "$grupo,$actNum,$actName" >> $actList
+                    echo "Actividad registrada"
+                    ;;
+
+                "Calificar actividad")
+                    # obtener lista de actvidades para elegir una. SE GUARDARÁ SOLO EL NUMERO
+
+                    while true; do
+                        actSel=$($mlrCmd --ho --from $actList filter "\$Grupo == \"$grupo\"" then put '$linea = $actNum . ". " . $actNombre' then cut -f linea | gum filter --header "¿Con cuál actividad trabajar?")
+                        [[ -z $actSel ]] && break
+
+                        while true; do
+                            local mensaje="$actSel, ¿Alumno a revisar?"
+                            alumno=$(chooseAlumno "$mensaje")
+                            [[ -z $alumno ]] && break
+                            num=$($mlrCmd --ho --from $listFile filter "\$Nombre == \"$alumno\"" then cut -f No.)
+
+                            actNum=$(echo "$actSel" | cut -d. -f1)
+                            actName=$(echo "$actSel" | cut -d. -f2 | sed 's/^ //')
+
+                            registrarTabajos $grupo $actSel $alumno $actNum $actName
+
+                            check=$($mlrCmd --ho --from $actFile filter "\$Grupo == \"$grupo\"" then filter "\$actNum == \"$actNum\"" then filter "\$Nombre == \"$alumno\"")
+
+                            if [[ -n $check ]]; then
+                                # echo "El registro exite"
+                                # $mlrCmd -I --from $actFile filter "\$Grupo == \"$grupo\"" then filter "\${No.} == \"$num\"" then filter "\$actNum == \"$actNum\"" then put "\$Calificación = \"$calificacion\""
+                                $mlrCmd -I --from "$actFile" put \
+                                    'if ($Grupo == "'"$grupo"'" && ${No.} == "'"$num"'" && $actNum == "'"$actNum"'" ) { $Calificación = '"$calificacion"'; }'
+
+                                echo "📝 Calificación actualizada para $alumno: $calificacion"
+
+                            else
+                                echo "$grupo,$num,$alumno,$actNum,$actName,$calificacion" >> "$actFile"
+                                echo "✅ Calificación registrada para $alumno: $calificacion"
+                            fi
+                        done
+                    done
+                    ;;
+                *)
+                    break
+                    ;;
+
+            esac
+
+        done
+    done
+}
+
+# Revisiónde P y CS
+
+initPFile()
+{
+    [[ -f $pFile ]] && {
+        return
+    }
+    echo "Grupo,No.,Nombre,P" > "$pFile"
+    $mlrCmd --ho --from "$listFile" \
+        cut -o -f Grupo,"No.",Nombre \
+        then put '$P=10' \
+        >> "$pFile"
+    echo "✅ Inicializado P=10 para todos en $pFile"
+    return
+}
+
+initCSFile()
+{
+    # Si ya existe, no tocamos nada
+    [[ -f $csFile ]] && {
+        return
+    }
+
+    # Creamos encabezado
+    echo "Grupo,No.,Nombre,CS" > "$csFile"
+
+    # Copiamos lista de alumnos y asignamos CS=5
+    $mlrCmd --ho --from "$listFile" \
+        cut -o -f Grupo,"No.",Nombre \
+        then put '$CS=5' \
+        >> "$csFile"
+
+    echo "✅ Inicializado CS=5 para todos en $csFile"
+    return
+}
+
+registerCS()
+{
+    initCSFile
+
+    local grupo=$(chooseGrupos)
+    [[ -z $grupo ]] && return
+
+    # Lista alumno: "01 Juan Pérez"
+    while true; do
+        local alumno=$(chooseAlumno "$grupo")
+        local num=$($mlrCmd --ho --from $listFile filter "\$Nombre == \"$alumno\"" then cut -f No.)
+        [[ -z $alumno ]] && break
+
+        # valor previo
+        local prev=$(
+            $mlrCmd --ho --from "$csFile" \
+                filter '$Grupo == "'"$grupo"'" && ${No.} == "'"$num"'"' then \
+                cut -o -f CS
+        )
+
+        local cs=$(gum input --header "CS (5-10) para $alumno" --value "$prev")
+        [[ -z $cs ]] && cs=$prev
+
+        # actualiza registro
+        # $mlrCmd -I --from "$csFile" \
+        # filter '$Grupo == "'"$grupo"'" && ${No.} == "'"$num"'"' then \
+        # put "\$CS = \"$cs\""
+        $mlrCmd -I --from "$csFile" put \
+            'if ($Grupo == "'"$grupo"'" && ${No.} == "'"$num"'") { $CS = '"$cs"'; }'
+
+        echo "Actualizado"
+
+        gum confirm "¿Capturar otro CS?" || break
+    done
+
+    echo "✅ Registro de CS actualizado en $csFile"
+}
+
+registerP()
+{
+    initPFile
+
+    local grupo=$(chooseGrupos)
+    [[ -z $grupo ]] && return
+
+    # Lista alumno: "01 Juan Pérez"
+    while true; do
+        local alumno=$(chooseAlumno "$grupo")
+        local num=$($mlrCmd --ho --from $listFile filter "\$Nombre == \"$alumno\"" then cut -f No.)
+        [[ -z $alumno ]] && break
+
+        # valor previo
+        local prev=$(
+            $mlrCmd --ho --from "$csFile" \
+                filter '$Grupo == "'"$grupo"'" && ${No.} == "'"$num"'"' then \
+                cut -o -f P
+        )
+
+        local p=$(gum input --header "P (5-10) para $alumno ($num)" --value "${prev:-10}")
+        [[ -z $p ]] && p=$prev
+
+        # actualiza registro
+
+        $mlrCmd --from "$pFile" -I put \
+            'if ($Grupo == "'"$grupo"'" && $No. == "'"$num"'") { $P = '"$p"'; }'
+
+        echo "Actualizado"
+
+        gum confirm "¿Capturar otro P?" || break
+    done
+
+    echo "✅ Registro de P actualizado en $pFile"
+}
+
+#############
+# Promedios
+# ###########
+
+reporteFinalAsistencias()
+{
+    local grupo="$1"
+    $mlrCmd --from $asisFile filter "\$Grupo == \"$grupo\"" then \
+        count -g Nombre,Asistencia then \
+        reshape -s Asistencia,count -o Nombre then \
+        unsparsify --fill-with 0 then \
+        put '$Asistencias = int($Asistencia) + int($Retardo) + int($Justificada); $Faltas = int($Falta) + int(Saltada); $Total = $Asistencias + $Faltas' then \
+        put '$Porcentaje = round(($Asistencias * 100) / $Total)' then \
+        rename Asistencia,Asistencias then \
+        cut -f No.,Nombre,Asistencias,Faltas,Porcentaje
+}
+
+prepararCalificacion()
+{
+    local grupo="$1"
+    local calif=$2
+    local comb="./tmp/comb.csv"
+    local fix="./tmp/fix.csv"
+    local union="./tmp/union.csv"
+    local fill="./tmp/fill.csv"
+
+    # 1. Crear lista temporal con todas las actividades para los alumnos
+    $mlrCmd --csv join --ul -j Grupo -f "$listFile" "$actList" | mlr --csv filter "\$Grupo == \"$grupo\"" then reorder -f Grupo,Nombre,actNum,No.,Baja,ActNombre > "$comb"
+
+    # Reordenar trabajos.csv porque xd
+    $mlrCmd reorder -f Grupo,Nombre,actNum,Calificación,actNombre $actFile > "$fix"
+
+    # # 2.Ahora si, unirlos
+    $mlrCmd join --ul -j Grupo,Nombre,actNum -f "$comb" "$fix" > "$union"
+
+    # # 3. Rellenar todo lo vacio con 5
+    $mlrCmd put "if (is_empty(\$Calificación)) {\$Calificación=$calif}" "$union"
+
+    # exit 0
+
+}
+
+verCalificacionGrupo()
+{
+    local grupo=$(chooseGrupos)
+    local calif=0
+    prepararCalificacion "$grupo" $calif | $viewCsv
+}
+
+calcularPromedios()
+{
+    local grupo="$1"
+    local calif=5
+    local calificado="./tmp/calificado.csv"
+    local promedio="./tmp/promedio.csv"
+    prepararCalificacion "$grupo" $calif > "$calificado"
+
+    # 4. calular promedio al fin <3
+    $mlrCmd stats1 -a mean -f Calificación -g Nombre "$calificado" > "$promedio"
+}
+
+verReporteAlumno()
+{
+    local grupo=$(chooseGrupos)
+    local alumno=$(chooseAlumno "$grupo")
+    local fecha=$(date +"%d de %B de %Y, a las %R")
+    local fileDate=$(date +"%Y-%m-%d")
+    local fileName=$(printf "%s" "$alumno" | sed -e 's/ *\/ */ /g' -e 's/ *\* */-/g' -e 's/ //g')
+    local file="${fileDate}_reporteAsistencia_${grupo}_${fileName}"
+
+    # Encabezado markdown
+    echo -e "# Reporte de asistencias \n 
+  - **Alumno:** $alumno \n
+  - **Grupo:** $grupo \n \n
+    ## Conteo de asistencias \n" > tmp.md
+
+    conteoAlumno "$grupo" "$alumno" | $mlrCmd --omd cat >> tmp.md
+
+    echo -e "## Listado de asistencias por fecha \n " >> tmp.md
+
+    verAlumno "$grupo" "$alumno" | $mlrCmd --omd cat >> tmp.md
+
+    echo -e "## Listado de actividades \n" >> tmp.md
+
+    # lista de todas las actividades, calificación en cada una, las no evaluadas, colocar NA
+    prepararCalificacion "$grupo" 0 \
+        | $mlrCmd filter "\$Nombre == \"$alumno\"" then \
+            cut -x -f Grupo,Nombre,No.,Baja then \
+            rename actNum,Número,actNombre,Actividad,Calificación,"Calificación (0 significa no revisada aún)" \
+        | $mlrCmd --omd cat >> tmp.md
+
+    echo -e "\n *Reporte generado el día $fecha.*" >> tmp.md
+
+    glow -t tmp.md
+
+    gum confirm "¿Exportar a PDF?" && {
+        pandoc -i tmp.md --pdf-engine=weasyprint -o "$reporteDir/$file.pdf"
+        echo "Reporte generado exitosamente como $file.pdf."
+    }
+    rm tmp.md
+}
+reporteTrimestral()
+{
+    local dir="reporteTrimestral"
+    mkdir -p "$dir"
+
+    # Ponderaciones
+
+    for grupo in $(getGrupos); do
+        local gDir="$dir/$grupo"
+        mkdir -p "$gDir"
+
+        # Asistencias pivoteadas
+        $mlrCmd --from $asisFile filter "\$Grupo == \"$grupo\"" then reshape -s Fecha,Asistencia then unsparsify --fill-with "NA" then cut -x -f Grupo > "$gDir/asistencias.csv"
+
+        # Trabajos pivoteados
+        local calif="tmp/tmp_calif.csv"
+        # prepararCalificacion "$grupo" | $mlrCmd sort -f Nombre,ActNombre > "$calif"
+        prepararCalificacion "$grupo" | $mlrCmd cut -o -f No.,Nombre,actNombre,Calificación \
+            then reshape -s actNombre,Calificación > "$gDir/trabajos.csv"
+
+        # Calificaciones finales
+        local asis="tmp/tmp_asis.csv"
+        local prom="tmp/tmp_prom.csv"
+        local cs="tmp/tmp_cs.csv"
+        local p="tmp/tmp_p.csv"
+        # Archivos temporales estupidos porque mlr es un maricón
+        local csLimpio="tmp/cs_limpio.csv"
+        local pLimpio="tmp/p_limpio.csv"
+        local join1="tmp/uno.csv"
+        local join2="tmp/dos.csv"
+        local joinFinal="tmp/final.csv"
+
+        reporteFinalAsistencias "$grupo" > "$asis"
+        calcularPromedios "$grupo"
+        cp ./tmp/promedio.csv "$prom"
+        $mlrCmd --from "$csFile" filter "\$Grupo == \"$grupo\"" > "$cs"
+        $mlrCmd --from "$pFile" filter "\$Grupo == \"$grupo\"" > "$p"
+
+        $mlrCmd --from "$cs" cut -f Nombre,CS > "$csLimpio"
+        $mlrCmd --from "$p" cut -f Nombre,P > "$pLimpio"
+
+        $mlrCmd join -j Nombre -f "$asis" "$prom" > "$join1"
+        $mlrCmd join -j Nombre -f tmp/uno.csv "$csLimpio" > "$join2"
+        $mlrCmd join -j Nombre -f tmp/dos.csv "$pLimpio" > "$joinFinal"
+
+        $mlrCmd --from $joinFinal put "\$Calificación_preliminar = (\$Calificación_mean * $pesoAC + \$CS * $pesoCS + \$P * $pesoP)" \
+            then put '$Calificación_final = ($Calificación_preliminar < 6) ? 5 : round ($Calificación_preliminar)' \
+            then cut -f No.,Nombre,Asistencias,Faltas,Calificación_mean,CS,P,Calificación_preliminar,Calificación_final \
+            then rename Calificación_mean,Promedio_trabajos > "$gDir/calificaciones.csv"
+    done
+
+    echo "✅ Reporte trimestral generado en $dir/"
+}
+
+# ######
+# MENU
+# ######
+while true; do
+    if [[ -z $1 ]]; then
+        menu=$(
+            gum filter --height=20 --header="¿Qué deseas hacer?" << EOF
+1. Pasar lista
+2. Modificar lista
+3. Registrar trabajos
+4. Asistencias por grupo
+5. Conteo por grupo
+6. Reporte de faltas en los últimos 15 días
+7. Reporte general de alumno
+8. VER: Asistencias por alumno
+9. VER: Asistencias por fecha
+10. EXPORTAR: REPORTE TRIMESTRAL
+11. Capturar CS
+12. Capturar P
+EOF
+        )
+
+    else
+        menu=$1
+    fi
+
+    case "$menu" in
+        "1. Pasar lista")
+            pasarLista
+            ;;
+        "2. Modificar lista")
+            editarLista
+            ;;
+        "3. Registrar trabajos")
+            gestionarTrabajos
+            ;;
+        "4. Asistencias por grupo")
+            verGrupo
+            ;;
+        "8. VER: Asistencias por alumno")
+            verAlumno
+            ;;
+        "5. Conteo por grupo")
+            contarAsistenciasGrupo
+            ;;
+        "9. VER: Asistencias por fecha")
+            asistenciasFecha
+            ;;
+        "7. Reporte general de alumno")
+            verReporteAlumno
+            ;;
+        "10. EXPORTAR: REPORTE TRIMESTRAL")
+            reporteTrimestral
+            ;;
+        "6. Reporte de faltas en los últimos 15 días")
+            reporteQuincenal
+            #
+            # verConteoGrupo
+            ;;
+        "11. Capturar CS")
+            registerCS
+            ;;
+        "12. Capturar P")
+            registerP
+            ;;
+        -t)
+            prepararCalificacion "1A" 0
+            # reporteFinalAsistencias "1A"
+            break
+            ;;
+        *)
+            echo "No se seleccionó nada"
+            break
+            ;;
+    esac
+done

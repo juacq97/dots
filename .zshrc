@@ -78,5 +78,5 @@ function y() {
 	rm -f -- "$tmp"
 }
 
-export PATH=$HOME/perl5/bin:$PATH
+export PATH=~/.local/bin:$HOME/perl5/bin:$PATH
 export PERL5LIB=$HOME/perl5/lib/perl5:$PERL5LIB

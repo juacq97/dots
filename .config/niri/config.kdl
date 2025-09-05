@@ -43,10 +43,10 @@ input {
 
 layout {
     background-color "transparent"
-    gaps 10
+    gaps 8
     center-focused-column "never"
     always-center-single-column
-    default-column-display "tabbed"
+    default-column-display "normal"
     preset-column-widths {
         proportion 0.33333
         proportion 0.5
@@ -56,20 +56,19 @@ layout {
     default-column-width { proportion 0.5; }
     // default-column-width {}
     focus-ring {
-        // off
+        off
 
         // How many logical pixels the ring extends out from the windows.
-        width 3
-	//active-color "#7fc8ff"
-        inactive-color "#505050"
+        width 5
+	    // active-color "#eff1f5"
+        // inactive-color "#eff1f5"
         active-gradient from="#a7c080" to="#e67e80" angle=70 relative-to="workspace-view"
-        // inactive-gradient from="#505050" to="#808080" angle=45 relative-to="workspace-view"
+        inactive-gradient from="#505050" to="#808080" angle=45 relative-to="workspace-view"
     }
     border {
-        off
-        width 4
+        width 3
         active-color "#ffc87f"
-        inactive-color "#505050"
+        // inactive-color  "#8c8fa1"
         urgent-color "#9b0000"
 }
 
@@ -77,14 +76,14 @@ tab-indicator {
         // off
         hide-when-single-tab
         place-within-column
-        gap 5
-        width 5
+        gap 2
+        width 10
         length total-proportion=1.0
-        position "top"
+        position "left"
         gaps-between-tabs 2
-        corner-radius 8
-        //active-color "red"
-        active-gradient from="#a7c080" to="#e67e80" angle=70 relative-to="workspace-view"
+        corner-radius 10
+        active-color "#ffc87f"
+        // active-gradient from="#a7c080" to="#e67e80" angle=70 relative-to="workspace-view"
         inactive-color "gray"
         urgent-color "blue"
         // active-gradient from="#80c8ff" to="#bbddff" angle=45
@@ -101,12 +100,12 @@ tab-indicator {
         color "#0007"
     }
 
-    struts {
-        // left 64
-        // right 64
-        // top 64
-        // bottom 64
-    }
+    // struts {
+    //     left 10
+    //     right 10
+    //     top 10
+    //     bottom 10
+    // }
 }
 
 spawn-at-startup "waybar"
@@ -153,6 +152,7 @@ hotkey-overlay {
     skip-at-startup
 }
 
+// Animations, bouncy, para gaps y redondeadas
 animations {
     // off
     // slowdown 3.0
@@ -172,19 +172,19 @@ animations {
     }
 
     horizontal-view-movement {
-        spring damping-ratio=0.6 stiffness=800 epsilon=0.0001
+        spring damping-ratio=0.8 stiffness=800 epsilon=0.0001
     }
 
     window-movement {
-        spring damping-ratio=0.6 stiffness=800 epsilon=0.0001
+        spring damping-ratio=0.8 stiffness=800 epsilon=0.0001
     }
 
     window-resize {
-        spring damping-ratio=0.6 stiffness=800 epsilon=0.0001
+        spring damping-ratio=0.8 stiffness=800 epsilon=0.0001
     }
 
     config-notification-open-close {
-        spring damping-ratio=0.6 stiffness=1000 epsilon=0.001
+        spring damping-ratio=0.8 stiffness=1000 epsilon=0.001
     }
 
     screenshot-ui-open {
@@ -218,7 +218,7 @@ window-rule {
 
 // (This example rule is commented out with a "/-" in front.)
 window-rule {
-    geometry-corner-radius 12
+    geometry-corner-radius 10
     clip-to-geometry true
 }
 

@@ -57,7 +57,7 @@ alias grep="grep --color=always"
 alias d="cd ~/.repos/dots"
 alias h="cd /mnt/Data"
 alias r="cd ~/.repos"
-alias nvim="helix"
+# alias nvim="helix"
 alias py="python"
 alias hx="helix"
 
@@ -65,6 +65,7 @@ alias hx="helix"
 export NVIM_LISTEN_ADDRESS=/tmp/nvimsocket #necesario para nvim --remote
 export LANG=es_MX.UTF-8
 export EDITOR="helix"
+# export EDITOR="nvim"
 export PAGER=less
 [ -r "$HOME/.local/bin/lesspipe.sh" ] && export LESSOPEN="| $HOME/.local/bin/lesspipe.sh %s"
 export LESS='-Ri '

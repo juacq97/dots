@@ -31,3 +31,4 @@ deno
 ruff
 bash-language-server
 shellcheck
+ntfs-3g

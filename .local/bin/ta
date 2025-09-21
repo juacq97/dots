@@ -31,7 +31,7 @@ chooseGrupos()
 
 getAlumno()
 {
-    $mlrCmd --ho --from "$listFile" filter "\$Grupo == \"$grupo\"" then filter '$Baja == "0"' then uniq -g Nombre
+    $mlrCmd --ho --from "$listFile" filter "\$Grupo == \"$grupo\"" then filter '$Baja == "0"' then uniq -g Nombre then sort -t nombre
 }
 
 chooseAlumno()
@@ -86,7 +86,6 @@ exportarGrupo()
     while true; do
         local grupo=$(chooseGrupos)
         [[ -z $grupo ]] && break
-
         $mlrCmd --from "$asisFile" filter "\$Grupo == \"$grupo\"" then reshape -s Fecha,Asistencia then cut -x -f Grupo
         break
     done
@@ -547,16 +546,16 @@ prepararCalificacion()
 {
     local grupo="$1"
     local calif=$2
-    local comb="./tmp/comb.csv"
-    local fix="./tmp/fix.csv"
-    local union="./tmp/union.csv"
-    local fill="./tmp/fill.csv"
+    local comb="$tmpDir/comb.csv"
+    local fix="$tmpDir/fix.csv"
+    local union="$tmpDir/union.csv"
+    local fill="$tmpDir/fill.csv"
 
     # 1. Crear lista temporal con todas las actividades para los alumnos
     $mlrCmd --csv join --ul -j Grupo -f "$listFile" "$actList" | mlr --csv filter "\$Grupo == \"$grupo\"" then reorder -f Grupo,Nombre,actNum,No.,Baja,ActNombre > "$comb"
 
     # Reordenar trabajos.csv porque xd
-    $mlrCmd reorder -f Grupo,Nombre,actNum,Calificación,actNombre actFile "$fix"
+    $mlrCmd reorder -f Grupo,Nombre,actNum,Calificación,actNombre "$actFile" > "$fix"
 
     # # 2.Ahora si, unirlos
     $mlrCmd join --ul -j Grupo,Nombre,actNum -f "$comb" "$fix" > "$union"
@@ -600,32 +599,32 @@ verReporteAlumno()
     echo -e "# Reporte de asistencias \n 
   - **Alumno:** $alumno \n
   - **Grupo:** $grupo \n \n
-    ## Conteo de asistencias \n" > tmp.md
+    ## Conteo de asistencias \n" > "$tmpDir/tmp.md"
 
-    conteoAlumno "$grupo" "$alumno" | $mlrCmd --omd cat >> tmp.md
+    conteoAlumno "$grupo" "$alumno" | $mlrCmd --omd cat >> "$tmpDir/tmp.md"
 
-    echo -e "## Listado de asistencias por fecha \n " >> tmp.md
+    echo -e "## Listado de asistencias por fecha \n " >> "$tmpDir/tmp.md"
 
-    verAlumno "$grupo" "$alumno" | $mlrCmd --omd cat >> tmp.md
+    verAlumno "$grupo" "$alumno" | $mlrCmd --omd cat >> "$tmpDir/tmp.md"
 
-    echo -e "## Listado de actividades \n" >> tmp.md
+    echo -e "## Listado de actividades \n" >> "$tmpDir/tmp.md"
 
     # lista de todas las actividades, calificación en cada una, las no evaluadas, colocar NA
     prepararCalificacion "$grupo" 0 \
         | $mlrCmd filter "\$Nombre == \"$alumno\"" then \
             cut -x -f Grupo,Nombre,No.,Baja then \
             rename actNum,Número,actNombre,Actividad,Calificación,"Calificación (0 significa no revisada aún)" \
-        | $mlrCmd --omd cat >> tmp.md
+        | $mlrCmd --omd cat >> "$tmpDir/tmp.md"
 
-    echo -e "\n *Reporte generado el día $fecha.*" >> tmp.md
+    echo -e "\n *Reporte generado el día $fecha.*" >> "$tmpDir/tmp.md"
 
-    glow -t tmp.md
+    glow -t "$tmpDir/tmp.md"
 
     gum confirm "¿Exportar a PDF?" && {
-        pandoc -i tmp.md --pdf-engine=weasyprint -o "$reporteDir/$file.pdf"
+        pandoc -i "$tmpDir/tmp.md" --pdf-engine=weasyprint -o "$reporteDir/$file.pdf"
         echo "Reporte generado exitosamente como $file.pdf."
     }
-    rm tmp.md
+    rm "$tmpDir/tmp.md"
 }
 reporteTrimestral()
 {

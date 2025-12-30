@@ -11,6 +11,7 @@ input {
     touchpad {
         tap
         natural-scroll
+        dwt
     }
 
     mouse {
@@ -20,7 +21,7 @@ input {
         // accel-profile "flat"
         // scroll-method "no-scroll"
     }
-     warp-mouse-to-focus
+     // warp-mouse-to-focus
      focus-follows-mouse max-scroll-amount="0%"
      workspace-auto-back-and-forth
      mod-key "Super"
@@ -123,7 +124,7 @@ environment {
 }
 
 cursor {
-    xcursor-theme "breeze_cursors"
+    // xcursor-theme "breeze_cursors"
     xcursor-size 24
 
     hide-when-typing
@@ -132,7 +133,7 @@ cursor {
 
 overview {
     zoom 0.6
-    backdrop-color "#3d484d"
+    backdrop-color "#24273a"
 
 
     workspace-shadow {
@@ -226,7 +227,7 @@ binds {
     // `niri msg action do-something`.
     Mod+Slash { show-hotkey-overlay; }
     Mod+Return hotkey-overlay-title="Open a Terminal: kitty" { spawn "kitty"; }
-    Mod+Space hotkey-overlay-title="Run an Application: fuzzel" { spawn "fuzzel"; }
+    Mod+Space hotkey-overlay-title="Run an Application: fuzzel" { spawn-sh "dms ipc spotlight toggle"; }
     Super+Alt+L hotkey-overlay-title="Lock the Screen: swaylock" { spawn "swaylock"; }
     // Mod+T { spawn "bash" "-c" "notify-send hello && exec alacritty"; }
 
@@ -234,10 +235,10 @@ binds {
     XF86AudioLowerVolume allow-when-locked=true { spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "0.1-"; }
     XF86AudioMute        allow-when-locked=true { spawn "wpctl" "set-mute" "@DEFAULT_AUDIO_SINK@" "toggle"; }
     XF86AudioMicMute     allow-when-locked=true { spawn "wpctl" "set-mute" "@DEFAULT_AUDIO_SOURCE@" "toggle"; }
-    XF86MonBrightnessUp {spawn "brightnessctl" "s" "+10%"; }
-    XF86MonBrightnessDown {spawn "brightnessctl" "s" "10%-"; }
+    XF86MonBrightnessUp {spawn "brightnessctl" "s" "+2%"; }
+    XF86MonBrightnessDown {spawn "brightnessctl" "s" "2%-"; }
 
-    Mod+Tab repeat=false { toggle-overview; }
+    Mod+W repeat=false { toggle-overview; }
 
     Mod+Shift+Q { close-window; }
 
@@ -254,10 +255,19 @@ binds {
     Mod+Ctrl+Down  { move-window-down; }
     Mod+Ctrl+Up    { move-window-up; }
     Mod+Ctrl+Right { move-column-right; }
-    Mod+Shift+H     { move-column-left; }
-    Mod+Shift+J     { move-window-down; }
-    Mod+Shift+K     { move-window-up; }
-    Mod+Shift+L     { move-column-right; }
+    Mod+Ctrl+h  { move-column-left; }
+    Mod+Ctrl+j  { move-window-down; }
+    Mod+Ctrl+k    { move-window-up; }
+    Mod+Ctrl+l { move-column-right; }
+    // Mod+Shift+H     { move-column-left; }
+    // Mod+Shift+J     { move-window-down; }
+    // Mod+Shift+K     { move-window-up; }
+    // Mod+Shift+L     { move-column-right; }
+    //
+    // kkhlhlhlhlh
+
+    Mod+Shift+h  { consume-or-expel-window-left; }
+    Mod+Shift+l { consume-or-expel-window-right; }
 
     // Alternative commands that move across workspaces when reaching
     // the first or last window in a column.
@@ -342,8 +352,6 @@ binds {
     Mod+Ctrl+8 { move-column-to-workspace 8; }
     Mod+Ctrl+9 { move-column-to-workspace 9; }
 
-    Mod+Ctrl+U  { consume-or-expel-window-left; }
-    Mod+Ctrl+I { consume-or-expel-window-right; }
 
     // Consume one window from the right to the bottom of the focused column.
     Mod+U  { consume-window-into-column; }
@@ -353,7 +361,7 @@ binds {
     Mod+R { switch-preset-column-width; }
     Mod+Shift+R { switch-preset-window-height; }
     Mod+Ctrl+R { reset-window-height; }
-    Mod+M { maximize-column; }
+    Mod+Shift+M { maximize-window-to-edges; }
     Mod+F11 { fullscreen-window; }
 
     Mod+Ctrl+M { expand-column-to-available-width; }

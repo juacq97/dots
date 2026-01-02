@@ -392,3 +392,6 @@ binds {
     Alt+Print { screenshot-window; }
     Mod+Escape allow-inhibiting=false { toggle-keyboard-shortcuts-inhibit; }
 }
+
+include "dms/wpblur.kdl"
+include "dms/colors.kdl"

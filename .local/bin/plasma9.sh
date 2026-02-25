@@ -21,7 +21,7 @@ move_and_resize()
     echo "window id:" $winid
 
     kdotool windowsize $winid $w $h
-    sleep 0.1s
+    sleep 0.05s
     kdotool windowmove $winid $x $y
 
 }

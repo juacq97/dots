@@ -1,6 +1,6 @@
 [theme]
-light= "catppuccin_latte"
-dark= "catppuccin_macchiato"
+light = "gruvbox_light"
+dark = "gruvbox"
 
 [editor]
 line-number = "relative"

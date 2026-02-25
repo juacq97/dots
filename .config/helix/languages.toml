@@ -9,6 +9,7 @@ formatter = { command = "shfmt", args = ["-i", "4", "-ci", "-bn", "-sr", "-fn", 
 name = "markdown"
 auto-format = true
 formatter = { command = 'deno', args = ["fmt", "-", "--ext", "md", "--prose-wrap", "never" ] }
+language-servers = [ "marksman" ]
 
 [[language]]
 name = "python"

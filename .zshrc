@@ -70,6 +70,7 @@ export PAGER=less
 [ -r "$HOME/.local/bin/lesspipe.sh" ] && export LESSOPEN="| $HOME/.local/bin/lesspipe.sh %s"
 export LESS='-Ri '
 export FZF_DEFAULT_COMMAND="find . "
+export HELIX_RUNTIME="$HOME/.repos/helix/runtime"
 
 function y() {
 	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
@@ -79,5 +80,5 @@ function y() {
 	rm -f -- "$tmp"
 }
 
-export PATH=~/.local/bin:$HOME/perl5/bin:$PATH
+export PATH=~/.local/bin:$HOME/perl5/bin:$HOME/.cargo/bin:$HOME/Documentos/anvil:$PATH
 export PERL5LIB=$HOME/perl5/lib/perl5:$PERL5LIB

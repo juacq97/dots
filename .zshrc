@@ -1,3 +1,5 @@
+# Add deno completions to search path
+if [[ ":$FPATH:" != *":/home/juan/.zsh/completions:"* ]]; then export FPATH="/home/juan/.zsh/completions:$FPATH"; fi
 # Plugin Manager 
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 [ ! -d $ZINIT_HOME ] && mkdir -p "$(dirname $ZINIT_HOME)"
@@ -80,5 +82,26 @@ function y() {
 	rm -f -- "$tmp"
 }
 
-export PATH=~/.local/bin:$HOME/perl5/bin:$HOME/.cargo/bin:$HOME/Documentos/anvil:$PATH
+# 1. Hook global: Se ejecuta automáticamente cada vez que el directorio cambia
+chpwd() {
+    echo "$PWD" > ~/.cache/global_lastdir
+}
+
+echo "$PWD" > ~/.cache/global_lastdir
+
+function yy() {
+    local tmp="$(mktemp -t "yazi-cwd.XXXXXX")"
+    local target_dir="${1:-$PWD}"
+    
+    yazi "$target_dir" --cwd-file="$tmp"
+    
+    if cwd="$(cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
+        # Al ejecutar cd, el hook 'chpwd' de arriba se disparará automáticamente
+        builtin cd -- "$cwd"
+    fi
+    rm -f -- "$tmp"
+}
+
+export PATH=~/.config/emacs/bin:~/.local/bin:$HOME/perl5/bin:$HOME/.cargo/bin:$HOME/Documentos/anvil:$PATH
 export PERL5LIB=$HOME/perl5/lib/perl5:$PERL5LIB
+. "/home/juan/.deno/env"

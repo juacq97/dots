@@ -61,12 +61,13 @@ alias h="cd /mnt/Data"
 alias r="cd ~/.repos"
 # alias nvim="helix"
 alias py="python"
-# alias hx="helix"
+#alias hx="helix"
 
 # variables
 export NVIM_LISTEN_ADDRESS=/tmp/nvimsocket #necesario para nvim --remote
 export LANG=es_MX.UTF-8
-export EDITOR="hx"
+export EDITOR="helix"
+export VISUAL="zeditor"
 # export EDITOR="nvim"
 export PAGER=less
 [ -r "$HOME/.local/bin/lesspipe.sh" ] && export LESSOPEN="| $HOME/.local/bin/lesspipe.sh %s"

@@ -62,11 +62,12 @@ alias r="cd ~/.repos"
 # alias nvim="helix"
 alias py="python"
 #alias hx="helix"
+alias temas="'/home/juan/baul/30-desarrollo/31-secuenciador/venv/bin/python' '/home/juan/baul/30-desarrollo/31-secuenciador/main.py'"
 
-# variables
+  # variables
 export NVIM_LISTEN_ADDRESS=/tmp/nvimsocket #necesario para nvim --remote
 export LANG=es_MX.UTF-8
-export EDITOR="helix"
+export EDITOR="hx"
 export VISUAL="zeditor"
 # export EDITOR="nvim"
 export PAGER=less

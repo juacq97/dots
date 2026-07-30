@@ -1,6 +1,6 @@
 [theme]
-light = "onelight"
-dark = "onedark"
+light = "everforest_light"
+dark = "everforest_dark"
 
 [editor]
 line-number = "relative"

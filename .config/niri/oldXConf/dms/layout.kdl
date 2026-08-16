@@ -4,13 +4,18 @@
 // ! PLACE YOUR CUSTOM CONFIGURATION ELSEWHERE !
 
 layout {
-    gaps 8
+    gaps 20
 
     border {
-        width 4
+        on
+        width 2
+        active-color "red"
+        inactive-color "#000000"
+
     }
 
     focus-ring {
+        off
         width 4
     }
 }

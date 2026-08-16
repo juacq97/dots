@@ -5,6 +5,7 @@ layout {
     background-color "transparent"
 
     focus-ring {
+        off
         active-color   "#6b782e"
         inactive-color "#7c6f64"
         urgent-color   "#c04a4a"
@@ -17,11 +18,17 @@ layout {
     }
 
     shadow {
-        color "#00000070"
+        on
+        softness 0
+        color "#000000ff"
+        offset x=4 y=4
+        spread 3
+        draw-behind-window false
+
     }
 
     tab-indicator {
-        active-color   "#6b782e"
+        active-color   "red"
         inactive-color "#7c6f64"
         urgent-color   "#c04a4a"
     }

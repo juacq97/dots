@@ -1,0 +1,57 @@
+layout {
+	gaps 15
+    background-color "transparent"
+    center-focused-column "never"
+    preset-column-widths {
+        proportion 0.33333
+        proportion 0.5
+        proportion 0.66667
+    }
+
+    default-column-width { proportion 0.5; }
+    border {
+        on
+        width 2
+        active-color "red"
+        inactive-color "#000000"
+    }
+
+    focus-ring {
+    	off
+    }
+
+    shadow {
+        on
+        softness 0
+        color "#000000ff"
+        offset x=4 y=4
+        spread 3
+        draw-behind-window false
+    }
+
+    // struts {
+    // }
+
+    tab-indicator {
+        active-color   "red"
+        inactive-color "#7c6f64"
+        urgent-color   "#c04a4a"
+    }
+
+    insert-hint {
+        color "#6b782e80"
+    }
+}
+
+window-rule {
+    geometry-corner-radius 12
+    clip-to-geometry true
+    tiled-state true
+    draw-border-with-background false
+    }
+
+overview {
+    workspace-shadow {
+        off
+    }
+}

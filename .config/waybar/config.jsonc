@@ -1,173 +1,201 @@
 // -*- mode: jsonc -*-
 {
-    "layer": "top", // Waybar at top layer
-    "position": "top", // Waybar position (top|bottom|left|right)
-    "height": 36, // Waybar height (to be removed for auto height)
-    "margin-top": 4,
-    "margin-bottom": 4,
-    "margin-left": 12,
-    "margin-right": 12,
-    "spacing": 12, // Gaps between modules (4px)
-    "reload_style_on_change": true,
-    "modules-left": [
-	"niri/workspaces",
-	"niri/window",
-    ], 
-    "modules-center": [
-	"clock",
-    ],
-    "modules-right": [
-        "idle_inhibitor",
-        "power-profiles-daemon",
-        "network",
-        "pulseaudio",
-        "battery"
-        //"tray",
-        //"custom/power"
-    ],
-
-    "niri/workspaces": {
-	"format": "󰧨 {value}",
-	// "format": "{windows}",
-	"current-only": false,
-	"display-condition": "only-populated",
-	"workspace-taskbar": {
-	    "enable": true,
-	    
-	}
-    },
-
-    "niri/window": {
-	"format": "{title}",
-	"icon": false
-    },
-
-    "idle_inhibitor": {
-        "format": "{icon}",
-        "format-icons": {
-            "activated": "󰅶",
-            "deactivated": "󰾪"
-        }
-    },
-    "tray": {
-        // "icon-size": 21,
-        "spacing": 10
-    },
-    "clock": {
-	"format": "{:%d de %b, %H:%M}",
-        "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
-
-	"calendar": {
-           "mode"          : "month",
-           "mode-mon-col"  : 3,
-           "weeks-pos"     : "right",
-           "on-scroll"     : 1,
-           "format": {
-              "months":     "<span color='#ffead3'><b>{}</b></span>",
-              "days":       "<span color='#ecc6d9'><b>{}</b></span>",
-              "weeks":      "<span color='#99ffdd'><b>W{}</b></span>",
-              "weekdays":   "<span color='#ffcc66'><b>{}</b></span>",
-              "today":      "<span color='#ff6699'><b><u>{}</u></b></span>"
-              }
-           },
-        "actions":  {
-                    "on-click-right": "mode",
-                    "on-scroll-up": "tz_up",
-                    "on-scroll-down": "tz_down",
-                    "on-scroll-up": "shift_up",
-                    "on-scroll-down": "shift_down"
-                    },
-        "format-alt": "{:%Y-%m-%d}"
-    },
-
-    "backlight": {
-        // "device": "acpi_video1",
-	"tooltip": true,
-	"tooltip-format": "{percent}%",
-        "format": "{icon}",
-	"format-alt": "{percent}% {icon}",
-        "format-icons": ["󰃚", "󰃛", ",󰃜", "󰃝", "󰃟", "󰃞", "󰃠"]
-    },
-    "battery": {
-        "states": {
-            // "good": 95,
-            "warning": 30,
-            "critical": 15
-        },
-	"tooltip": true,
-	"tooltip-format": "{capacity}%",
-        "format": "{icon}",
-        "format-full": "󰂄 ",
-        "format-charging": "󱐋{icon}",
-        "format-plugged": "{icon}",
-        "format-alt": "{time} {icon}",
-        // "format-good": "", // An empty format will hide the module
-        // "format-full": "",
-        "format-icons": ["󰁺","󰁻","󰁼","󰁽","󰁾","󰁿","󰂀","󰂁","󰂂","󰁹"]
-    },
-    "power-profiles-daemon": {
-      "format": "{icon}",
-      "tooltip-format": "Power profile: {profile}\nDriver: {driver}",
-      "tooltip": true,
-      "format-icons": {
-        "default": "",
-        "performance": "",
-        "balanced": "",
-        "power-saver": ""
+  "layer": "top", // Waybar at top layer
+  "position": "top", // Waybar position (top|bottom|left|right)
+  "height": 36, // Waybar height (to be removed for auto height)
+  "margin-top": 0,
+  "margin-bottom": 0,
+  "margin-left": 0,
+  "margin-right": 0,
+  "spacing": 12, // Gaps between modules (4px)
+  "reload_style_on_change": true,
+  "modules-left": [
+    "mango/workspaces",
+    "mango/layout"
+    // "niri/workspaces",
+    // "niri/window",
+  ],
+  "modules-center": [
+    "clock",
+  ],
+  "modules-right": [
+    "idle_inhibitor",
+    "power-profiles-daemon",
+    "network",
+    "pulseaudio",
+    "battery"
+    //"tray",
+    //"custom/power"
+  ],
+  "mango/workspaces": {
+    "format": "󰧨 {value}"
+  },
+  "niri/workspaces": {
+    "format": "󰧨 {value}",
+    // "format": "{windows}",
+    "current-only": false,
+    "display-condition": "only-populated",
+    "workspace-taskbar": {
+      "enable": true,
+    }
+  },
+  "niri/window": {
+    "format": "{title}",
+    "icon": false
+  },
+  "idle_inhibitor": {
+    "format": "{icon}",
+    "format-icons": {
+      "activated": "󰅶",
+      "deactivated": "󰾪"
+    }
+  },
+  "tray": {
+    // "icon-size": 21,
+    "spacing": 10
+  },
+  "clock": {
+    "format": "{:%d de %b, %H:%M}",
+    "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
+    "calendar": {
+      "mode": "month",
+      "mode-mon-col": 3,
+      "weeks-pos": "right",
+      "on-scroll": 1,
+      "format": {
+        "months": "<span color='#ffead3'><b>{}</b></span>",
+        "days": "<span color='#ecc6d9'><b>{}</b></span>",
+        "weeks": "<span color='#99ffdd'><b>W{}</b></span>",
+        "weekdays": "<span color='#ffcc66'><b>{}</b></span>",
+        "today": "<span color='#ff6699'><b><u>{}</u></b></span>"
       }
     },
-    "network": {
-        // "interface": "wlp2*", // (Optional) To force the use of this interface
-        //"format-wifi": "{essid} ({signalStrength}%) {icon}",
-        "format-wifi": "{icon}",
-        "tooltip-format": "{signalStrength}% {icon}",
-        "format-disconnected": "󰤭",
-        "format-alt": "{essid} ({signalStrength}%)  ",
-	"format-icons": ["󰤯","󰤟","󰤢","󰤥","󰤨"]
+    "actions": {
+      "on-click-right": "mode",
+      "on-scroll-up": "tz_up",
+      "on-scroll-down": "tz_down",
+      "on-scroll-up": "shift_up",
+      "on-scroll-down": "shift_down"
     },
-    "pulseaudio": {
-        // "scroll-step": 1, // %, can be a float
-	"tooltip": true,
-        "format": "{icon}",
-        "tooltip-format": "{volume}%",
-        "format-bluetooth": "{volume}% {icon} {format_source}",
-        "format-bluetooth-muted": " {icon} {format_source}",
-        "format-muted": "Mute 󰸈 ",
-        "format-source": "{volume}% ",
-        "format-source-muted": "",
-        "format-icons": {
-            "headphone": "",
-            "hands-free": "",
-            "headset": "",
-            "phone": "",
-            "portable": "",
-            "car": "",
-            "default": ["󰕿", "󰖀", "󰕾"]
-        },
-        "on-click": "pavucontrol"
+    "format-alt": "{:%Y-%m-%d}"
+  },
+  "backlight": {
+    // "device": "acpi_video1",
+    "tooltip": true,
+    "tooltip-format": "{percent}%",
+    "format": "{icon}",
+    "format-alt": "{percent}% {icon}",
+    "format-icons": [
+      "󰃚",
+      "󰃛",
+      ",󰃜",
+      "󰃝",
+      "󰃟",
+      "󰃞",
+      "󰃠"
+    ]
+  },
+  "battery": {
+    "states": {
+      // "good": 95,
+      "warning": 30,
+      "critical": 15
     },
-    "custom/media": {
-        "format": "{icon} {text}",
-        "return-type": "json",
-        "max-length": 40,
-        "format-icons": {
-            "spotify": "",
-            "default": "🎜"
-        },
-        "escape": true,
-        "exec": "$HOME/.config/waybar/mediaplayer.py 2> /dev/null" // Script in resources folder
-        // "exec": "$HOME/.config/waybar/mediaplayer.py --player spotify 2> /dev/null" // Filter player based on name
-    },
-    "custom/power": {
-        "format" : "⏻ ",
-		"tooltip": false,
-		"menu": "on-click",
-		"menu-file": "$HOME/.config/waybar/power_menu.xml", // Menu file in resources folder
-		"menu-actions": {
-			"shutdown": "shutdown",
-			"reboot": "reboot",
-			"suspend": "systemctl suspend",
-			"hibernate": "systemctl hibernate"
-		}
+    "tooltip": true,
+    "tooltip-format": "{capacity}%",
+    "format": "{icon}",
+    "format-full": "󰂄 ",
+    "format-charging": "󱐋{icon}",
+    "format-plugged": "{icon}",
+    "format-alt": "{time} {icon}",
+    // "format-good": "", // An empty format will hide the module
+    // "format-full": "",
+    "format-icons": [
+      "󰁺",
+      "󰁻",
+      "󰁼",
+      "󰁽",
+      "󰁾",
+      "󰁿",
+      "󰂀",
+      "󰂁",
+      "󰂂",
+      "󰁹"
+    ]
+  },
+  "power-profiles-daemon": {
+    "format": "{icon}",
+    "tooltip-format": "Power profile: {profile}\nDriver: {driver}",
+    "tooltip": true,
+    "format-icons": {
+      "default": "",
+      "performance": "",
+      "balanced": "",
+      "power-saver": ""
     }
+  },
+  "network": {
+    // "interface": "wlp2*", // (Optional) To force the use of this interface
+    //"format-wifi": "{essid} ({signalStrength}%) {icon}",
+    "format-wifi": "{icon}",
+    "tooltip-format": "{signalStrength}% {icon}",
+    "format-disconnected": "󰤭",
+    "format-alt": "{essid} ({signalStrength}%)  ",
+    "format-icons": [
+      "󰤯",
+      "󰤟",
+      "󰤢",
+      "󰤥",
+      "󰤨"
+    ]
+  },
+  "pulseaudio": {
+    // "scroll-step": 1, // %, can be a float
+    "tooltip": true,
+    "format": "{icon}",
+    "tooltip-format": "{volume}%",
+    "format-bluetooth": "{volume}% {icon} {format_source}",
+    "format-bluetooth-muted": " {icon} {format_source}",
+    "format-muted": "Mute 󰸈 ",
+    "format-source": "{volume}% ",
+    "format-source-muted": "",
+    "format-icons": {
+      "headphone": "",
+      "hands-free": "",
+      "headset": "",
+      "phone": "",
+      "portable": "",
+      "car": "",
+      "default": [
+        "󰕿",
+        "󰖀",
+        "󰕾"
+      ]
+    },
+    "on-click": "pavucontrol"
+  },
+  "custom/media": {
+    "format": "{icon} {text}",
+    "return-type": "json",
+    "max-length": 40,
+    "format-icons": {
+      "spotify": "",
+      "default": "🎜"
+    },
+    "escape": true,
+    "exec": "$HOME/.config/waybar/mediaplayer.py 2> /dev/null" // Script in resources folder
+    // "exec": "$HOME/.config/waybar/mediaplayer.py --player spotify 2> /dev/null" // Filter player based on name
+  },
+  "custom/power": {
+    "format": "⏻ ",
+    "tooltip": false,
+    "menu": "on-click",
+    "menu-file": "$HOME/.config/waybar/power_menu.xml", // Menu file in resources folder
+    "menu-actions": {
+      "shutdown": "shutdown",
+      "reboot": "reboot",
+      "suspend": "systemctl suspend",
+      "hibernate": "systemctl hibernate"
+    }
+  }
 }

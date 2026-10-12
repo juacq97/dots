@@ -15,3 +15,7 @@ language-servers = [ "marksman" ]
 name = "python"
 formatter = { command = "ruff", args = ["format", "--line-length", "88", "-"] }
 auto-format = true
+
+[[language]]
+name = "json"
+auto-format = true

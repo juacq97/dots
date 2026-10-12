@@ -1,6 +1,6 @@
 # Add deno completions to search path
 if [[ ":$FPATH:" != *":/home/juan/.zsh/completions:"* ]]; then export FPATH="/home/juan/.zsh/completions:$FPATH"; fi
-# Plugin Manager 
+# Plugin Manager
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 [ ! -d $ZINIT_HOME ] && mkdir -p "$(dirname $ZINIT_HOME)"
 [ ! -d $ZINIT_HOME/.git ] && git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
@@ -14,7 +14,6 @@ zinit light zsh-users/zsh-completions
 zinit light zsh-users/zsh-autosuggestions
 zinit light Aloxaf/fzf-tab
 
-
 # Basic auto/tab complete:
 autoload -U compinit
 zstyle ':completion:*' menu no
@@ -22,7 +21,7 @@ zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
 zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
 zmodload zsh/complist
 compinit
-_comp_options+=(globdots)		# Include hidden files.
+_comp_options+=(globdots)                 # Include hidden files.
 ZSH_AUTOSUGGEST_STRATEGY=(match_prev_cmd) #Completa con el ultimo comando que se uso despues del ultimo comando.
 
 # Use vim keys in tab complete menu:
@@ -33,13 +32,13 @@ bindkey -M menuselect 'j' vi-down-line-or-history
 bindkey -v '^?' backward-delete-char
 bindkey '^ ' autosuggest-accept #Completa con C-space
 
-bindkey -v #vim mode 
+bindkey -v #vim mode
 export KEYTIMEOUT=1
 
 # Edit line in vim with ctrl-e:
-autoload edit-command-line; zle -N edit-command-line
+autoload edit-command-line
+zle -N edit-command-line
 bindkey '^e' edit-command-line
-
 
 # Historial de zsh
 HISTFILE=~/.cache/zsh/history
@@ -64,7 +63,7 @@ alias py="python"
 #alias hx="helix"
 alias temas="'/home/juan/baul/30-desarrollo/31-secuenciador/venv/bin/python' '/home/juan/baul/30-desarrollo/31-secuenciador/main.py'"
 
-  # variables
+# variables
 export NVIM_LISTEN_ADDRESS=/tmp/nvimsocket #necesario para nvim --remote
 export LANG=es_MX.UTF-8
 export EDITOR="hx"
@@ -73,35 +72,35 @@ export EDITOR="hx"
 export PAGER=less
 [ -r "$HOME/.local/bin/lesspipe.sh" ] && export LESSOPEN="| $HOME/.local/bin/lesspipe.sh %s"
 export LESS='-Ri '
-export FZF_DEFAULT_COMMAND="find . "
+export FZF_DEFAULT_COMMAND="fd . '$HOME/baul'"
 export HELIX_RUNTIME="$HOME/.repos/helix/runtime"
 
 function y() {
 	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
 	yazi "$@" --cwd-file="$tmp"
-	IFS= read -r -d '' cwd < "$tmp"
+	IFS= read -r -d '' cwd <"$tmp"
 	[ -n "$cwd" ] && [ "$cwd" != "$PWD" ] && builtin cd -- "$cwd"
 	rm -f -- "$tmp"
 }
 
 # 1. Hook global: Se ejecuta automáticamente cada vez que el directorio cambia
 chpwd() {
-    echo "$PWD" > ~/.cache/global_lastdir
+	echo "$PWD" >~/.cache/global_lastdir
 }
 
-echo "$PWD" > ~/.cache/global_lastdir
+echo "$PWD" >~/.cache/global_lastdir
 
 function yy() {
-    local tmp="$(mktemp -t "yazi-cwd.XXXXXX")"
-    local target_dir="${1:-$PWD}"
-    
-    yazi "$target_dir" --cwd-file="$tmp"
-    
-    if cwd="$(cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
-        # Al ejecutar cd, el hook 'chpwd' de arriba se disparará automáticamente
-        builtin cd -- "$cwd"
-    fi
-    rm -f -- "$tmp"
+	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")"
+	local target_dir="${1:-$PWD}"
+
+	yazi "$target_dir" --cwd-file="$tmp"
+
+	if cwd="$(cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
+		# Al ejecutar cd, el hook 'chpwd' de arriba se disparará automáticamente
+		builtin cd -- "$cwd"
+	fi
+	rm -f -- "$tmp"
 }
 
 export PATH=~/.config/emacs/bin:~/.local/bin:$HOME/perl5/bin:$HOME/.cargo/bin:$HOME/Documentos/anvil:$PATH

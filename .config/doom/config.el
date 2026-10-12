@@ -1,4 +1,5 @@
 ;;; $DOOMDIR/config.el -*- lexical-binding: t; -*-
+(add-to-list 'default-frame-alist '(alpha-background . 100))
 
 ;; Place your private configuration here! Remember, you do not need to run 'doom
 ;; sync' after modifying this file!
@@ -19,7 +20,7 @@
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
-(setq doom-theme 'modus-operandi-tinted)
+(setq doom-theme 'ef-eagle)
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
@@ -66,58 +67,82 @@
 ;;  :config:h
 ;;  (helix-mode))
 
-(defun my/dired-last-active-dir ()
-  "Busca el último directorio activo en la lista de buffers y devuelve un buffer de dired."
-  (let ((last-dir
-         (catch 'found
-           ;; buffer-list devuelve los buffers ordenados por uso más reciente
-           (dolist (buf (buffer-list))
-             (with-current-buffer buf
-               ;; Ignorar el dashboard y los buffers especiales (que empiezan con *)
-               (when (and default-directory
-                          (not (string-match-p "^\\s-*\\*" (buffer-name)))
-                          (not (eq major-mode '+doom-dashboard-mode)))
-                 (throw 'found default-directory))))
-           ;; Fallback al home si por alguna razón no hay buffers activos
-           "~/")))
-    (dired-noselect last-dir)))
 
-;; Indicarle a Emacs que use esta función al abrir un nuevo frame sin argumentos
-(setq initial-buffer-choice #'my/dired-last-active-dir)
+(use-package! ewm
+  :custom
+  (ewm-output-config '(("eDP-1" :width 2256 :height 1504 :scale 1.33)))
+  :bind (:map ewm-mode-map
+              ("s-SPC" . consult-buffer)
+              ("s-l" . windmove-right)
+              ("s-h" . windmove-left)
+              ("s-k" . windmove-up)
+              ("s-j" . windmove-down)
+              ("s-o" . split-window-right)
+              ("s-i" . split-window-below)
+              ("C-x b" . display-buffer)
+              ))
 
+(setopt ewm-input-config
+        '((touchpad :natural-scroll t :tap t :dwt t)
+          (mouse :accel-profile "flat")
+          (trackpoint :accel-speed 0.5)
+          (keyboard :repeat-delay 200 :repeat-rate 25
+                    :xkb-layouts "latam"
+                    )))
+
+;; Render unfocused windows at 70% opacity.
+
+(when (daemonp)
+  (add-hook 'after-make-frame-functions
+            (defun +ewm-trigger-server-hooks-h (frame)
+              (when (display-graphic-p frame)
+                (remove-hook 'after-make-frame-functions #'+ewm-trigger-server-hooks-h)
+                (with-selected-frame frame
+                  (run-hooks 'server-after-make-frame-hook))))))
+
+(map! "C-x b" #'consult-buffer)
+
+
+;;; COnfiguraaacion para usar tabbar como un status line
+;; (use-package! i3bar
+;;   :config
+;;   (i3bar-mode 1))
+
+;; (use-package! tab-bar
+;;   :custom
+;;   (tab-bar-format '(tab-bar-format-tabs        ; Optional: Remove to _only_ display the bar.
+;;                     tab-bar-format-align-right ; Optional: Remove to align left.
+;;                     tab-bar-format-global))
+;;   :config
+;;   (tab-bar-mode 1))
+;;
+;; (defun my/dired-last-active-dir ()
+;;   "Busca el último directorio activo en la lista de buffers y devuelve un buffer de dired."
+;;   (let ((last-dir
+;;          (catch 'found
+;;            ;; buffer-list devuelve los buffers ordenados por uso más reciente
+;;            (dolist (buf (buffer-list))
+;;              (with-current-buffer buf
+;;                ;; Ignorar el dashboard y los buffers especiales (que empiezan con *)
+;;                (when (and default-directory
+;;                           (not (string-match-p "^\\s-*\\*" (buffer-name)))
+;;                           (not (eq maj
+;;                                    (throw 'found default-directory))))
+;;                  ;; Fallback al home si por alguna razón no hay buffers activos
+;;                  "~/")))
+;;            (dired-noselect last-dir))))))
+;; 
+;; ;; Indicarle a Emacs que use esta función al abrir un nuevo frame sin argumentos
+;; (setq initial-buffer-choice #'my/dired-last-active-dir)
+;; 
 (after! dired
   (map! :map dired-mode-map
         :ng "h" #'dired-up-directory
         :ng "l" #'dired-find-file))
+;; 
 
+(meow-define-keys
+    'normal
+  '("y" . meow-clipboard-save)
+  )
 
-;;; INTENTO CLAUDE CUIDADOOOOO
-;;;;;;;;;;;;
-
-;; Que org-agenda encuentre tu archivo
-(setq org-agenda-files '("~/probandoOrgDB/test.org"))
-
-;; Dashboard BTC
-(setq org-agenda-custom-commands
-      '(("b" "Dashboard BTC"
-         ((todo "TAREA"
-                ((org-agenda-overriding-header "📋 TAREA")))
-          (todo "EXTENSIONES"
-                ((org-agenda-overriding-header "🔭 EXTENSIONES")))
-          (todo "CONSOLIDACIÓN"
-                ((org-agenda-overriding-header "✅ CONSOLIDACIÓN")))))))
-
-(defun btc/dashboard-grupos ()
-  (interactive)
-  (let ((org-agenda-prefix-format '((tags . "  %-40b"))))
-    (org-ql-search (org-agenda-files)
-      '(level 3)
-      :title "Estado por grupos"
-      :super-groups
-      '((:name "✅ Todos los grupos vistos"
-         :pred (lambda (item)
-                 (cl-every (lambda (g)
-                             (string= (org-entry-get (point) g) "x"))
-                           '("I" "J" "K" "L"))))
-        (:name "⏳ Parcialmente vistos"
-         :anything t)))))

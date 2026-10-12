@@ -5,7 +5,12 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
-   '("32c8a345728dbae8d9b55ad603ccfb288340f2051a0d24cb4d06679caa8b19f0"
+   '("f38f24d7468df32f8945a0572c856223f8351b8ea050b717ce36b0051399e3ad"
+     "8c7e832be864674c220f9a9361c851917a93f921fedb7717b1b5ece47690c098"
+     "4990532659bb6a285fee01ede3dfa1b1bdf302c5c3c8de9fad9b6bc63a9252f7"
+     "aec7b55f2a13307a55517fdf08438863d694550565dee23181d2ebd973ebd6b8"
+     "b89b6d95670712b8742f4391416483a29d4315323a218600590160e132c70ec8"
+     "32c8a345728dbae8d9b55ad603ccfb288340f2051a0d24cb4d06679caa8b19f0"
      "6f80a4696a6afcaf6bb4e92be879432ca8566f042f9c0e6cbeff1f5eb6280bc3"
      "6efc2371dc77a14f7dc6618d836e960ca4e64ee24424cfb85481d69716f0df58"
      "7ca83cf2d3ac8efe6a5f9826654582b4cad5fdf26ae9427d139340cef2da68bf"
@@ -22,7 +27,8 @@
      "0c83e0b50946e39e237769ad368a08f2cd1c854ccbcd1a01d39fdce4d6f86478"
      "720838034f1dd3b3da66f6bd4d053ee67c93a747b219d1c546c41c4e425daf93"
      "b99ff6bfa13f0273ff8d0d0fd17cc44fab71dfdc293c7a8528280e690f084ef0"
-     "d481904809c509641a1a1f1b1eb80b94c58c210145effc2631c1a7f2e4a2fdf4" default)))
+     "d481904809c509641a1a1f1b1eb80b94c58c210145effc2631c1a7f2e4a2fdf4" default))
+ '(package-selected-packages '(lorem-ipsum rainbow-mode)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

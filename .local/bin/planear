@@ -1,47 +1,81 @@
 #!/usr/bin/env bash
 #
 
-SRC_DIR="$HOME/baul/20-recursosDidacticos/24-btcCodigo"
-OUT_DIR="$HOME/baul/20-recursosDidacticos/22-btc"
 ROOT_DIR="$HOME/baul/20-recursosDidacticos"
 
-mkdir -p "$OUT_DIR"
+BTC_SRC_DIR="$HOME/baul/20-recursosDidacticos/24-btcCodigo"
+SEC_SRC_DIR="$HOME/baul/20-recursosDidacticos/23-secuenciasCodigo"
 
-# 2. Entramos a la carpeta del código fuente para listar con fzf
-cd "$SRC_DIR" || {
-    echo "Error: No se encuentra $SRC_DIR"
-    exit 1
+BTC_OUT_DIR="$HOME/baul/20-recursosDidacticos/22-btc"
+SEC_OUT_DIR="$HOME/baul/20-recursosDidacticos/21-secuencias"
+
+SEL=$(echo -e "Secuencia\nbtc" | fzf)
+
+COMPILAR()
+{
+    if [[ $SEL == btc ]]; then
+        SRC_DIR=$BTC_SRC_DIR
+        OUT_DIR=$BTC_OUT_DIR
+    else
+        SRC_DIR=$SEC_SRC_DIR
+        OUT_DIR=$SEC_OUT_DIR
+    fi
+
+    mkdir -p "$OUT_DIR"
+
+    # 2. Entramos a la carpeta del código fuente para listar con fzf
+    cd "$SRC_DIR" || {
+        echo "Error: No se encuentra $SRC_DIR"
+        exit 1
+    }
+
+    # Seleccionamos con fzf mostrando vista previa del documento
+    ARCHIVO_TYP=$(find . -maxdepth 1 -name "*.typ" -type f | sed 's|^\./||' | fzf \
+        --prompt="📘 Selecciona planeación > " \
+        --height=40% \
+        --layout=reverse \
+        --border \
+        --preview="head -n 25 {}" \
+        --preview-window=right:50%:wrap)
+
+    # Si se cancela fzf (ESC), salimos
+    if [ -z "$ARCHIVO_TYP" ]; then
+        exit 0
+    fi
+
+    # 3. Construimos la ruta de salida para el PDF
+    NOMBRE_BASE="${ARCHIVO_TYP%.typ}"
+    RUTA_PDF="${OUT_DIR}/${NOMBRE_BASE}.pdf"
+
+    # 4. Preguntamos si se quiere modo watch o compilación única
+    echo ""
+    echo "📄 Archivo: $ARCHIVO_TYP"
+    echo "📦 Destino: $RUTA_PDF"
+    echo "--------------------------------------------------------"
+
+    echo "⚙️  Compilando..."
+    typst compile "$ARCHIVO_TYP" "$RUTA_PDF" --root "$ROOT_DIR"
 }
 
-# Seleccionamos con fzf mostrando vista previa del documento
-ARCHIVO_TYP=$(find . -maxdepth 1 -name "*.typ" -type f | sed 's|^\./||' | fzf \
-    --prompt="📘 Selecciona planeación > " \
-    --height=40% \
-    --layout=reverse \
-    --border \
-    --preview="head -n 25 {}" \
-    --preview-window=right:50%:wrap)
-
-# Si se cancela fzf (ESC), salimos
-if [ -z "$ARCHIVO_TYP" ]; then
-    exit 0
-fi
-
-# 3. Construimos la ruta de salida para el PDF
-NOMBRE_BASE="${ARCHIVO_TYP%.typ}"
-RUTA_PDF="${OUT_DIR}/${NOMBRE_BASE}.pdf"
-
-# 4. Preguntamos si se quiere modo watch o compilación única
-echo ""
-echo "📄 Archivo: $ARCHIVO_TYP"
-echo "📦 Destino: $RUTA_PDF"
-echo "--------------------------------------------------------"
-
-echo "⚙️  Compilando..."
-typst compile "$ARCHIVO_TYP" "$RUTA_PDF" --root "$ROOT_DIR"
-
+COMPILAR
 if [ $? -eq 0 ]; then
     echo "✅ ¡Listo! PDF guardado en: $RUTA_PDF"
-else
+    read -p "¿Mostrar archivo? (S/n)" MOSTRAR
+    if [[ $MOSTRAR == "S" ]]; then
+        xdg-open $RUTA_PDF
+    elif [[ $MOSTRAR == "s" ]]; then
+        xdg-open $RUTA_PDF
+    fi
+
+    while true; do
+        read -p "¿Desea recompilar el mismo archivo? (Útil si se esta modificando) (S/n/c) " RECOMPILAR
+        if [[ $RECOMPILAR == "s" ]]; then
+            COMPILAR
+        elif [[ $RECOMPILAR == "S" ]]; then
+            COMPILAR
+        else
+            exit
+        fi
+    done
     echo "❌ Error de compilación."
 fi

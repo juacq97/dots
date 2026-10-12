@@ -57,3 +57,6 @@
 (package! ef-themes)
 (package! casual-suite)
 (package! org-ql)
+(package! i3bar)
+(package! echo-bar)
+(package! rainbow-mode)

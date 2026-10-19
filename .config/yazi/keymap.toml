@@ -1,0 +1,9 @@
+[[mgr.prepend_keymap]]
+on = "l"
+run  = "plugin smart-enter"
+desc = "Enter the child directory, or open the file"
+
+[[mgr.prepend_keymap]]
+on   = [ "f", "h" ]
+run  = "shell 'ya pub dds-cd --str \"$(fd -H . ~/baul | fzf)\"' --block"
+desc = "FZF search in Home folder"

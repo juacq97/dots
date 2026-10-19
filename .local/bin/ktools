@@ -1,0 +1,79 @@
+#! /bin/sh
+
+DMENU_CMD="vicinae dmenu"
+
+lista_ventanas=$(
+	for id in $(kdotool search); do
+		window_name=$(kdotool getwindowname "$id" 2>/dev/null)
+
+		# Si la variable está vacía (-z), salta la iteración actual
+		if [ -z "$window_name" ]; then
+			continue
+		fi
+
+		echo "$window_name"
+	done
+)
+
+buffer=$(printf "%b" "$(emacsclient -e '(with-output-to-string (dolist (b (buffer-list)) (let ((n (buffer-name b))) (unless (string-prefix-p " " n) (princ (format "%s\n" n))))))')" | tr -d '"')
+
+buffer_etiquetado=$(echo "$buffer" | sed 's/^/[E] /')
+
+# Unir ambas variables de forma limpia
+lista_completa=$(printf "%s\n%s\n" "$lista_ventanas" "$buffer_etiquetado")
+
+# Usarla con dmenu
+seleccion=$(echo "$lista_completa" | $DMENU_CMD)
+
+########################
+# Separar buffers
+########################
+
+# Si se canceló la selección (cadena vacía), salir
+[ -z "$seleccion" ] && exit 0
+
+# Evaluar si la línea empieza por [E]
+if [[ "$seleccion" == "\[E\]"* ]]; then
+	# 1. Remover "[E] " del inicio para obtener solo el nombre del buffer
+	nombre_buffer="${seleccion#\[E\] }"
+
+	# Obtener geometria de la ventana actual
+	focus_window_geo=$(kdotool getwindowgeometry $(kdotool getactivewindow))
+	echo $focus_window_geo
+	focus_window_x=$(echo "$focus_window_geo" | grep Position | cut -d ":" -f2 | cut -d, -f1 | cut -d. -f1)
+	focus_window_y=$(echo "$focus_window_geo" | grep Position | cut -d ":" -f2 | cut -d, -f2 | cut -d. -f1 | cut -d' ' -f1)
+
+	focus_window_w=$(echo "$focus_window_geo" | grep Geometry | cut -d ":" -f2 | cut -d"x" -f1 | cut -d. -f1)
+	focus_window_h=$(echo "$focus_window_geo" | grep Geometry | cut -d ":" -f2 | cut -d"x" -f2 | cut -d. -f1 | cut -d' ' -f1)
+
+	echo $focus_window_x
+	echo $focus_window_y
+	echo $focus_window_w
+	echo $focus_window_h
+	echo $nombre_buffer
+
+	emacsclient -c -e "(switch-to-buffer \"$nombre_buffer\")"
+else
+	id=$(kdotool search "$seleccion")
+
+	# Obtener geometria de la ventana actual
+	focus_window_geo=$(kdotool getwindowgeometry $(kdotool getactivewindow))
+	echo $focus_window_geo
+	focus_window_x=$(echo "$focus_window_geo" | grep Position | cut -d ":" -f2 | cut -d, -f1 | cut -d. -f1)
+	focus_window_y=$(echo "$focus_window_geo" | grep Position | cut -d ":" -f2 | cut -d, -f2 | cut -d. -f1 | cut -d' ' -f1)
+
+	focus_window_w=$(echo "$focus_window_geo" | grep Geometry | cut -d ":" -f2 | cut -d"x" -f1 | cut -d. -f1)
+	focus_window_h=$(echo "$focus_window_geo" | grep Geometry | cut -d ":" -f2 | cut -d"x" -f2 | cut -d. -f1 | cut -d' ' -f1)
+
+	echo $focus_window_x
+	echo $focus_window_y
+	echo $focus_window_w
+	echo $focus_window_h
+
+	# Mover ventana
+	kdotool set_desktop_for_window $id "current_desktop"
+	kdotool windowmove $id $focus_window_x $focus_window_y
+	kdotool windowsize $id $focus_window_w $focus_window_h
+	kdotool windowactivate $id
+
+fi

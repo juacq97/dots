@@ -1,0 +1,9 @@
+#! /bin/sh
+
+BAUL_DIR="$HOME/baul"
+DMENU_CMD="rofi -matching regex -dmenu -p Baul -theme reverie"
+
+# xdg-open $(find $BAUL_DIR | $DMENU_CMD)
+sel=$(find $BAUL_DIR | $DMENU_CMD)
+
+xdg-open "$sel"

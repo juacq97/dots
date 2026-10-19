@@ -1,0 +1,32 @@
+#! /bin/sh
+
+DMENU_CMD="vicinae dmenu --no-footer"
+
+case $1 in
+"e")
+	buffer=$(printf "%b" "$(emacsclient -e '(with-output-to-string (dolist (b (buffer-list)) (let ((n (buffer-name b))) (unless (string-prefix-p " " n) (princ (format "%s\n" n))))))')" | tr -d '"')
+	seleccion=$(echo "$buffer" | $DMENU_CMD)
+	[ -z "$seleccion" ] && exit 0
+	# Obtener geometria de la ventana actual
+	# focus_window_geo=$(kdotool getwindowgeometry $(kdotool getactivewindow))
+	# echo $focus_window_geo
+	# focus_window_x=$(echo "$focus_window_geo" | grep Position | cut -d ":" -f2 | cut -d, -f1 | cut -d. -f1)
+	# focus_window_y=$(echo "$focus_window_geo" | grep Position | cut -d ":" -f2 | cut -d, -f2 | cut -d. -f1 | cut -d' ' -f1)
+
+	# focus_window_w=$(echo "$focus_window_geo" | grep Geometry | cut -d ":" -f2 | cut -d"x" -f1 | cut -d. -f1)
+	# focus_window_h=$(echo "$focus_window_geo" | grep Geometry | cut -d ":" -f2 | cut -d"x" -f2 | cut -d. -f1 | cut -d' ' -f1)
+
+	emacsclient -c -e "(switch-to-buffer \"$seleccion\")" &
+	;;
+
+"b")
+	BAUL_DIR="$HOME/baul"
+	dir_list=$(find $BAUL_DIR \( -name "__pycache__" -o -name ".venv" -o -name "venv" -o -name ".pytest_cache" -o -name ".git" -o -name "99-archivo" \) -prune -o -print)
+	seleccion=$(echo "$dir_list" | $DMENU_CMD)
+	[ -z "$seleccion" ] && exit 0
+	xdg-open "$seleccion"
+	;;
+*)
+	exit
+	;;
+esac

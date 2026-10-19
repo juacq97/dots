@@ -1,10 +1,6 @@
 ;;; $DOOMDIR/config.el -*- lexical-binding: t; -*-
-(add-to-list 'default-frame-alist '(alpha-background . 100))
+(add-to-list 'default-frame-alist '(alpha-background . 0.85))
 
-;; Place your private configuration here! Remember, you do not need to run 'doom
-;; sync' after modifying this file!
-;; Doom exposes five (optional) variables for controlling fonts in Doom:
-;;
 ;; - `doom-font' -- the primary font to use
 ;; - `doom-variable-pitch-font' -- a non-monospace font (where applicable)
 ;; - `doom-big-font' -- used for `doom-big-font-mode'; use this for
@@ -14,22 +10,13 @@
 ;;
 ;; See 'C-h v doom-font' for documentation and more examples of what they
 ;; accept. For example:
-;;
 
-(setq doom-font (font-spec :family "0xProto Nerd Font" :size 14 :weight 'semi-light))
-;; There are two ways to load a theme. Both assume the theme is installed and
-;; available. You can either set `doom-theme' or manually load a theme with the
-;; `load-theme' function. This is the default:
-(setq doom-theme 'ef-eagle)
-
-;; This determines the style of line numbers in effect. If set to `nil', line
-;; numbers are disabled. For relative line numbers, set this to `relative'.
-(setq display-line-numbers-type t)
-
-;; If you use `org' and don't want your org files in the default location below,
-;; change `org-directory'. It must be set before org loads!
+(setq doom-font (font-spec :family "Monofur Nerd Font Mono" :size 18 :weight 'semi-bold))
+(setq doom-variable-pitch-font (font-spec :family "Fira Sans" :size 14 :weight 'semi-bold))
+(setq doom-big-font (font-spec :family "Fira Sans" :size 24 :weight 'semi-bold))
+(setq doom-theme 'ef-cyprus)
+(setq display-line-numbers-type 'relative)
 (setq org-directory "~/org/")
-
 
 ;; Whenever you reconfigure a package, make sure to wrap your config in an
 ;; `with-eval-after-load' block, otherwise Doom's defaults may override your
@@ -62,15 +49,73 @@
 ;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
 ;; they are implemented.
 
+(defun my/consult-baul-action (file)
+  "Abre FILE en Emacs si es texto/código, o con la aplicación externa del sistema si es binario/multimedia."
+  (let* ((ext (downcase (or (file-name-extension file) "")))
+         ;; Lista de extensiones que quieres abrir dentro de Emacs (incluyendo "" para archivos sin extensión como LICENSE o Makefile)
+         (text-exts '("el" "txt" "md" "org" "html" "css" "js" "json" "yaml" "yml" "sh" "typ" "py" "c" "cpp" "h" "ini" "cfg" "conf" "csv" "xml" "")))
+    (if (member ext text-exts)
+        (consult--file-action file)
+      ;; Abre con la aplicación externa del sistema (equivalente a abrir con 'E' en Dired)
+      (start-process "external-opener" nil "xdg-open" (expand-file-name file)))))
 
-;;(use-package! helix
-;;  :config:h
-;;  (helix-mode))
+(defun my/consult-find-baul ()
+  "Busca archivos de forma recursiva en ~/baul usando consult-find."
+  (interactive)
+  (let ((default-directory (expand-file-name "~/baul")))
+    (consult-find)))
+
+(defvar consult-source-baul
+  `(:name     "Baul"
+    :narrow   ?m                    ; Letra para filtrar con narrowing (ej: presionar b dentro de consult-buffer)
+    :category file
+    :face     consult-file
+    :history  file-name-history
+    :items    (lambda ()
+                ;; Lista los archivos de forma recursiva en ~/baul
+                (directory-files-recursively (expand-file-name "~/baul") "" nil t))
+    :action   ,#'my/consult-baul-action)
+  "Fuente personalizada para buscar archivos en el baúl dentro de consult-buffer.")
+
+(defvar consult-source-xdg-apps
+  `(:name "Apps"
+    :narrow ?a
+    :category app
+    :items ,(lambda ()
+              (mapcar #'car (ewm-list-xdg-apps)))
+    :action ,#'ewm-launch-xdg-command))
+
+(setq consult-buffer-sources
+      '(consult-source-buffer
+        consult-source-baul
+        consult-source-hidden-buffer
+        consult-source-modified-buffer
+        consult-source-recent-file
+        consult-source-xdg-apps
+        ))
+
+(defun my/ewm-frame-new-named ()
+  "Pregunta un nombre, crea un frame y le asigna el nombre de forma segura."
+  (interactive)
+  ;; 1. Preguntamos el nombre primero
+  (let ((frame-name (read-string "Nombre del nuevo frame (dejar en blanco para default): "))
+        created-frame)
+
+    ;; 2. Usamos un hook temporal para capturar el frame exacto que se va a crear
+    (let ((hook (lambda (f) (setq created-frame f))))
+      (add-hook 'after-make-frame-functions hook)
+      (unwind-protect
+          (ewm-frame-new)
+        (remove-hook 'after-make-frame-functions hook)))
+
+    ;; 3. Si se creó un frame y escribiste un nombre, se lo aplicamos directamente al objeto
+    (when (and created-frame (not (string-empty-p frame-name)))
+      (set-frame-parameter created-frame 'name frame-name))))
 
 
-(use-package! ewm
+(use-package ewm
   :custom
-  (ewm-output-config '(("eDP-1" :width 2256 :height 1504 :scale 1.33)))
+  (ewm-output-config '(("eDP-1" :width 2256 :height 1504 :scale 1.5)))
   :bind (:map ewm-mode-map
               ("s-SPC" . consult-buffer)
               ("s-l" . windmove-right)
@@ -79,8 +124,16 @@
               ("s-j" . windmove-down)
               ("s-o" . split-window-right)
               ("s-i" . split-window-below)
-              ("C-x b" . display-buffer)
-              ))
+              ("C-x b" . consult-buffer)
+              ("s-t" . my/ewm-frame-new-named)
+              ("s-r" . set-frame-name)
+              ("s-q". ewm-frame-close)
+              ("s-w" . select-frame-by-name)
+              ("s-<f11>" . ewm-toggle-fullscreen)
+              )
+  :config
+  (start-process-shell-command "awww-daemon" nil "awww-daemon")
+  )
 
 (setopt ewm-input-config
         '((touchpad :natural-scroll t :tap t :dwt t)
@@ -102,22 +155,40 @@
 
 (map! "C-x b" #'consult-buffer)
 
+;; COnfiguraaacion para usar tabbar como un status line
+(use-package! i3bar
+  :config
+  (i3bar-mode 1))
 
-;;; COnfiguraaacion para usar tabbar como un status line
-;; (use-package! i3bar
-;;   :config
-;;   (i3bar-mode 1))
+(use-package! tab-bar
+  :init
+  (setq tab-bar-tab-name-function
+        (lambda ()
+          (or (frame-parameter nil 'name) "Frame sin nombre")))
+  (setq tab-bar-close-button-show nil)
+  :custom
+  (tab-bar-format '(tab-bar-format-tabs        ; Optional: Remove to _only_ display the bar.
+                    tab-bar-format-align-right ; Optional: Remove to align left.
+                    tab-bar-format-global))
+  :config
+  (tab-bar-mode 1))
 
-;; (use-package! tab-bar
-;;   :custom
-;;   (tab-bar-format '(tab-bar-format-tabs        ; Optional: Remove to _only_ display the bar.
-;;                     tab-bar-format-align-right ; Optional: Remove to align left.
-;;                     tab-bar-format-global))
-;;   :config
-;;   (tab-bar-mode 1))
+(use-package! kdeconnect
+  :config
+  (setq kdeconnect-devices '(("Pixel" . "9704b455f09f4accb767615b269c474f")))
+  (setq kdeconnect-active-device '("Pixel" . "9704b455f09f4accb767615b269c474f"))
+  )
+
+(add-hook! 'doom-load-theme-hook
+  (defun my/apply-tab-bar-styles ()
+    (let ((bg (face-attribute 'tab-bar :background nil 'default)))
+      (set-face-attribute 'tab-bar-tab nil :background bg :box nil :family "Fira Sans")
+      (set-face-attribute 'tab-bar-tab-inactive nil :box nil :family "Fira Sans")
+      (set-face-attribute 'tab-bar-tab-highlight nil :background bg :box nil :family "Fira Sans"))))
+
 ;;
 ;; (defun my/dired-last-active-dir ()
-;;   "Busca el último directorio activo en la lista de buffers y devuelve un buffer de dired."
+;;    { link = background" }el último directorio activo en la lista de buffers y devuelve un buffer de dired."
 ;;   (let ((last-dir
 ;;          (catch 'found
 ;;            ;; buffer-list devuelve los buffers ordenados por uso más reciente
@@ -146,3 +217,38 @@
   '("y" . meow-clipboard-save)
   )
 
+(defun mi/run-in-quick-frame (command)
+  "Abre un frame flotante minimalista, ejecuta COMMAND y cierra el frame al salir."
+  (interactive)
+  (let* ((frame (make-frame '((name . "emacs-quick-launcher")
+                              (width . 90)
+                              (height . 15)
+                              (undecorated . t)
+                              (visibility . visible)
+                              (fullscreen . nil))))
+         (cleanup (lambda ()
+                    (when (frame-live-p frame)
+                      (delete-frame frame)))))
+    (select-frame frame)
+    ;; Asegurarnos de que el frame se borre cuando el minibuffer termine o se cancele
+    (add-hook 'minibuffer-exit-hook cleanup nil t)
+    (unwind-protect
+        (call-interactively command)
+      ;; Por si acaso se sale sin pasar por el minibuffer-exit-hook normal
+      (when (frame-live-p frame)
+        (delete-frame frame)))))
+
+;; Wrappers específicos para tus accesos directos
+(defun mi/quick-M-x ()
+  (interactive)
+  (mi/run-in-quick-frame #'execute-extended-command))
+
+(defun mi/quick-consult-buffer ()
+  (interactive)
+  (mi/run-in-quick-frame #'consult-buffer))
+
+
+;; (use-package! mini-frame
+;;   :config
+;;   (mini-frame-mode 1)
+;;   (setq mini-frame-standalone t))

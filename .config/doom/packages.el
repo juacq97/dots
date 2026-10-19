@@ -60,3 +60,9 @@
 (package! i3bar)
 (package! echo-bar)
 (package! rainbow-mode)
+(package! org-present)
+(package! everforest
+  :recipe (:repo "https://github.com/Theory-of-Everything/everforest-emacs.git"))
+(package! kdeconnect)
+(package! mini-frame)
+(package! gruvbox-theme)
